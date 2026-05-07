@@ -1,0 +1,584 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  ChevronRight, 
+  ChevronLeft, 
+  Calendar, 
+  Users, 
+  ShieldCheck, 
+  CreditCard,
+  CheckCircle2,
+  Snowflake,
+  Home,
+  Search,
+  Mail,
+  MapPin
+} from 'lucide-react';
+
+export default function App() {
+  const [view, setView] = useState('home'); 
+  const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false); // 新增：處理發送狀態
+  const [formData, setFormData] = useState({
+    agree: false,
+    name: '',
+    lineId: '',
+    email: '',
+    type: 'SB', 
+    peopleCount: 1,
+    days: 1,
+    location: '',
+    courseDates: Array.from({ length: 10 }, () => ({ date: '', time: '全天 (09:30-15:30)' })),
+    level: 'Lv.0',
+    target: '',
+    paymentMethod: '台幣匯款',
+    promoCode: '',
+    coach: '',
+    students: Array.from({ length: 6 }, () => ({
+      nameCN: '',
+      nameEN: '',
+      birthday: '',
+      gender: '男'
+    }))
+  });
+
+  const levelOptions = {
+    SB: [
+      { lv: 'Lv.0', desc: '從未滑雪過，不知道如何穿雪鞋、穿板，也不會煞車或滑行。' },
+      { lv: 'Lv.1', desc: '輕微接觸過滑雪，會一點點控制方向或煞車，但還不太會轉彎。' },
+      { lv: 'Lv.2', desc: '能在初級道（綠線）安全滑行，能簡單橫滑，嘗試控制速度。' },
+      { lv: 'Lv.3', desc: '能在綠線自如滑行、連續轉彎，準備挑戰紅線。' },
+      { lv: 'Lv.4', desc: '能順利滑行紅線，加強雕刻技術或速度控制。' },
+      { lv: 'Lv.5', desc: '中級坡駕輕就熟，想挑戰非整地、野雪或公園。' },
+      { lv: 'Lv.6', desc: '能應付所有雪況，追求極限技巧。' }
+    ],
+    SKI: [
+      { lv: 'Lv.0', desc: '從未滑雪、不認識裝備、不會煞車。' },
+      { lv: 'Lv.1', desc: '可平整滑行，會煞停，但無法控制方向。' },
+      { lv: 'Lv.2', desc: '能在綠線進行簡單的全開式轉彎。' },
+      { lv: 'Lv.3', desc: '能穩定轉彎、能在綠線自如滑行。' },
+      { lv: 'Lv.4', desc: '熟悉綠線、開始挑戰紅線，但動作尚不穩定。' },
+      { lv: 'Lv.5', desc: '紅線滑行平滑、掌握速度變化與動作。' },
+      { lv: 'Lv.6', desc: '能自如滑行大部分地面、挑戰黑線。' }
+    ]
+  };
+
+  const steps = ["條款與聯絡", "課程配置", "學員資料", "確認送出"];
+
+  const calculateTotalTWD = () => {
+    const basePrice = 15000;
+    return basePrice * formData.peopleCount * formData.days;
+  };
+
+  const calculateTotalJPY = () => {
+    return calculateTotalTWD() * 5;
+  };
+
+  const handleNext = () => {
+    if (step === 1 && (!formData.agree || !formData.name || !formData.email)) {
+      return; 
+    }
+    if (step < 4) setStep(step + 1);
+  };
+
+  // --- 重點：對接 GAS 的提交函式 ---
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    const gasUrl = 'https://script.google.com/macros/s/AKfycbx1v6Hu62b86c0_2-J0nCpraRI6wy_z_Xt_vnGVDl7YUK0tiRzJS-NPmOy2JmhlbuI/exec';
+    
+    // 依照你的 GAS 欄位需求組合資料
+    const payload = {
+      action: "newOrder",
+      userName: formData.name,
+      lineID: formData.lineId,
+      email: formData.email,
+      type: "滑雪課程",
+      boardType: formData.type,
+      itemDetail: `${formData.type} ${formData.days}天課程 (${formData.level})`,
+      peopleCount: formData.peopleCount,
+      days: formData.days,
+      startDate: formData.courseDates[0]?.date || "", // 取第一天上課日
+      totalPrice: calculateTotalTWD(),
+      payMethod: formData.paymentMethod,
+      level: formData.level,
+      resort: formData.location,
+      coach: formData.coach,
+      goals: formData.target,
+      agreePromo: "是",
+      students: formData.students.slice(0, formData.peopleCount).map(s => ({
+        nameCH: s.nameCN,
+        nameEN: s.nameEN,
+        gender: s.gender,
+        birthday: s.birthday,
+        passport: "" // 預留欄位
+      }))
+    };
+
+    try {
+      // 使用 no-cors 模式發送
+      await fetch(gasUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      
+      setView('success');
+    } catch (error) {
+      console.error('Submission failed:', error);
+      alert('發送失敗，請檢查網路或聯繫教練');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const updateStudent = (index, field, value) => {
+    const newStudents = [...formData.students];
+    newStudents[index][field] = value;
+    setFormData({ ...formData, students: newStudents });
+  };
+
+  const updateCourseDate = (index, field, value) => {
+    const newDates = [...formData.courseDates];
+    newDates[index][field] = value;
+    setFormData({ ...formData, courseDates: newDates });
+  };
+
+  if (view === 'success') {
+    return (
+      <div className="min-h-screen bg-[#FEFCE8] flex items-center justify-center p-6 text-slate-800 font-sans">
+        <div className="max-w-md w-full bg-white border border-slate-200 rounded-[3rem] p-10 text-center shadow-xl">
+          <div className="w-20 h-20 bg-[#F3E8FF] rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 className="w-10 h-10 text-[#A78BFA]" />
+          </div>
+          <h2 className="text-3xl font-bold mb-4 text-[#7C3AED]">預約申請已送出！</h2>
+          <p className="text-slate-400 mb-2">請留意 Email 與 LINE 訊息</p>
+          <p className="text-slate-500 text-sm mb-8">我們將盡快核對款項並與您聯繫。</p>
+          <button onClick={() => { setView('home'); setStep(1); }} className="w-full py-4 bg-[#8B9D77] text-white rounded-2xl font-bold hover:opacity-90 transition-all">返回首頁</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#FEF9C3] text-slate-700 font-sans tracking-tight">
+      <div className="fixed inset-0 pointer-events-none opacity-40">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-[#FDE2E4] rounded-full blur-3xl" />
+        <div className="absolute bottom-40 right-20 w-48 h-48 bg-[#E2ECE9] rounded-full blur-3xl" />
+      </div>
+
+      <nav className="relative z-10 p-6 flex justify-between items-center border-b border-[#EAB308]/20 bg-white/60 backdrop-blur-md sticky top-0">
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => setView('home')}>
+          <div className="bg-[#8B9D77] p-1.5 rounded-lg shadow-sm">
+            <Snowflake className="text-white w-5 h-5" />
+          </div>
+          <span className="text-xl font-bold tracking-tight text-slate-800 uppercase italic">Snow Way</span>
+        </div>
+        <div className="flex gap-4">
+          <button className="p-2 hover:bg-white rounded-full transition"><Search className="w-5 h-5 text-slate-400" /></button>
+          <button onClick={() => setView('home')} className="p-2 hover:bg-white rounded-full transition"><Home className="w-5 h-5 text-slate-400" /></button>
+        </div>
+      </nav>
+
+      <main className="relative z-10 max-w-2xl mx-auto px-6 py-12">
+        {view === 'home' ? (
+          <section className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            <div className="mb-16 text-center space-y-4">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#8B9D77] bg-[#8B9D77]/10 px-3 py-1 rounded-full">Explore Zao with us</span>
+              <h1 className="text-4xl md:text-5xl font-bold text-slate-800 leading-tight">
+                雪之道，走出你的滑雪方式。<br/>
+                <span className="text-[#8B9D77] font-serif italic text-2xl md:text-3xl mt-2 block">雪の道、自分の滑り方を見つけよう。</span>
+              </h1>
+              <p className="text-slate-400 text-sm italic tracking-widest font-light">滑雪課程 ｜ 山形民宿 ｜ 包團行程</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div onClick={() => {setView('booking-ski'); setStep(1);}} className="group relative overflow-hidden bg-white border border-slate-200 p-8 rounded-[3rem] hover:shadow-2xl transition-all duration-500 cursor-pointer">
+                <div className="absolute top-0 right-0 p-6 text-[#E2ECE9] group-hover:rotate-12 transition-transform duration-700">
+                  <Snowflake className="w-24 h-24" />
+                </div>
+                <div className="relative z-10">
+                  <div className="w-12 h-12 bg-[#FDE2E4] rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+                    <Snowflake className="w-6 h-6 text-[#F0A0A5]" />
+                  </div>
+                  <h2 className="text-xl font-bold text-slate-800 mb-2 uppercase">滑雪學校</h2>
+                  <p className="text-slate-400 text-xs leading-relaxed max-w-[160px]">單板 / 雙板 / 幼兒教學<br/>專業私人班指導</p>
+                  <div className="mt-8 flex items-center text-[#8B9D77] font-bold text-sm group-hover:gap-2 transition-all">
+                    立即預約 <ChevronRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="group relative overflow-hidden bg-white border border-slate-200 p-8 rounded-[3rem] hover:shadow-2xl transition-all duration-500 cursor-pointer">
+                <div className="absolute top-0 right-0 p-6 text-[#FDE2E4]/40 group-hover:-rotate-12 transition-transform duration-700">
+                  <Home className="w-24 h-24" />
+                </div>
+                <div className="relative z-10">
+                  <div className="w-12 h-12 bg-[#E2ECE9] rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+                    <Home className="w-6 h-6 text-[#8B9D77]" />
+                  </div>
+                  <h2 className="text-xl font-bold text-slate-800 mb-2 uppercase">民宿預約</h2>
+                  <p className="text-slate-400 text-xs leading-relaxed max-w-[160px]">山形在地溫馨住宿<br/>感受家的溫度</p>
+                  <div className="mt-8 flex items-center text-[#8B9D77] font-bold text-sm group-hover:gap-2 transition-all">
+                    查看房型 <ChevronRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        ) : (
+          <section className="bg-white rounded-[3rem] p-8 md:p-12 shadow-xl border border-slate-100">
+            <div className="mb-12">
+              <div className="flex justify-between items-end mb-4">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">Step {step}</span>
+                <span className="text-sm font-bold text-[#8B9D77] italic">{steps[step-1]}</span>
+              </div>
+              <div className="h-1 bg-slate-50 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-[#8B9D77] transition-all duration-1000" 
+                  style={{ width: `${(step / 4) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            {step === 1 && (
+              <div className="space-y-8 animate-in fade-in">
+                <div className="bg-[#FEFCE8] rounded-[2.5rem] p-8 h-64 overflow-y-auto text-[13px] text-slate-500 leading-relaxed custom-scrollbar border border-[#EAB308]/10">
+                  <h3 className="text-[#8B9D77] font-bold mb-4 text-base">【預約與取消條款】</h3>
+                  <p className="mb-3">● 46天前取消 - 訂金全額退還</p>
+                  <p className="mb-3">● 31-45天前取消 - 訂金退還20%</p>
+                  <p className="mb-3">● 30天內取消 - 訂金不予退還</p>
+                  <p className="mb-4 font-bold text-slate-700 italic">※ 若因天候因素雪場完全停止營業，將扣除手續費後全額退費。</p>
+                  <hr className="border-slate-100 my-6" />
+                  <p className="mb-3">● 個人因素（如遲到、受傷、個人健康等）恕不退費。</p>
+                  <p>● 課程費用僅包含教學，不含雪票、器材、交通、保險等。</p>
+                </div>
+                
+                <label className="flex items-center gap-4 cursor-pointer group">
+                  <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${formData.agree ? 'bg-[#8B9D77] border-[#8B9D77] text-white' : 'border-slate-100 group-hover:border-[#8B9D77]/30'}`}>
+                    {formData.agree && <CheckCircle2 className="w-4 h-4" />}
+                  </div>
+                  <input type="checkbox" className="hidden" checked={formData.agree} onChange={() => setFormData({...formData, agree: !formData.agree})} />
+                  <span className="text-xs text-slate-400">我已閱讀並完全同意以上預約和取消條款</span>
+                </label>
+
+                <div className="grid grid-cols-1 gap-4">
+                  <input 
+                    type="text" 
+                    value={formData.name} 
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    placeholder="預約大名" 
+                    className="w-full bg-slate-50 rounded-2xl p-4 outline-none text-sm focus:bg-white focus:ring-1 focus:ring-[#8B9D77]/20 transition-all"
+                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input 
+                      type="text" 
+                      value={formData.lineId}
+                      onChange={(e) => setFormData({...formData, lineId: e.target.value})}
+                      placeholder="LINE ID" 
+                      className="w-full bg-slate-50 rounded-2xl p-4 outline-none text-sm focus:bg-white focus:ring-1 focus:ring-[#8B9D77]/20 transition-all"
+                    />
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-4 w-4 h-4 text-slate-300" />
+                      <input 
+                        type="email" 
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        placeholder="Email 電子郵件" 
+                        className="w-full bg-slate-50 rounded-2xl p-4 pl-11 outline-none text-sm focus:bg-white focus:ring-1 focus:ring-[#8B9D77]/20 transition-all"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-8 animate-in fade-in">
+                <div className="flex p-1.5 bg-slate-50 rounded-2xl">
+                  <button 
+                    onClick={() => setFormData({...formData, type: 'SB'})}
+                    className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${formData.type === 'SB' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-400'}`}
+                  >單板 SB</button>
+                  <button 
+                    onClick={() => setFormData({...formData, type: 'SKI'})}
+                    className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${formData.type === 'SKI' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-400'}`}
+                  >雙板 SKI</button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="bg-slate-50 rounded-2xl p-4">
+                    <label className="text-[10px] font-black text-slate-300 uppercase mb-2 block">上課人數 (最多6人)</label>
+                    <div className="flex items-center justify-between">
+                      <button onClick={() => setFormData({...formData, peopleCount: Math.max(1, formData.peopleCount - 1)})} className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-slate-400 hover:text-[#8B9D77]">-</button>
+                      <span className="font-bold text-slate-700">{formData.peopleCount} 人</span>
+                      <button onClick={() => setFormData({...formData, peopleCount: Math.min(6, formData.peopleCount + 1)})} className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-slate-400 hover:text-[#8B9D77]">+</button>
+                    </div>
+                  </div>
+                  <div className="bg-slate-50 rounded-2xl p-4">
+                    <label className="text-[10px] font-black text-slate-300 uppercase mb-2 block">上課天數</label>
+                    <input 
+                      type="number" min="1" max="10" 
+                      value={formData.days}
+                      onChange={(e) => setFormData({...formData, days: parseInt(e.target.value) || 1})}
+                      className="w-full bg-transparent text-center font-bold outline-none text-slate-700"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-300 uppercase ml-1 block">上課地點</label>
+                  <select 
+                    value={formData.location}
+                    onChange={(e) => setFormData({...formData, location: e.target.value})}
+                    className="w-full bg-slate-50 rounded-2xl p-4 outline-none text-sm focus:bg-white focus:ring-1 focus:ring-[#8B9D77]/20 transition-all appearance-none"
+                  >
+                    <option value="" disabled>請選擇上課地點</option>
+                    <option value="越後湯澤＿岩原">越後湯澤＿岩原</option>
+                    <option value="越後湯澤＿其他">越後湯澤＿其他</option>
+                    <option value="山形＿藏王溫泉">山形＿藏王溫泉</option>
+                    <option value="山形＿藏王liza world">山形＿藏王liza world</option>
+                    <option value="山形＿其他">山形＿其他</option>
+                  </select>
+                  <p className="text-[11px] text-[#8B9D77] italic ml-1 mt-1">※ 請先跟客服確認上課地點呦</p>
+                </div>
+
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black text-slate-300 uppercase ml-1 block">課程日期與時段</label>
+                  <div className="max-h-64 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+                    {Array.from({ length: formData.days }).map((_, i) => (
+                      <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 bg-slate-50 rounded-[1.5rem] border border-slate-100">
+                        <div className="flex items-center gap-2 text-[10px] font-black text-[#8B9D77] uppercase italic md:col-span-2">Day {i + 1}</div>
+                        <input 
+                          type="date" 
+                          value={formData.courseDates[i]?.date || ''}
+                          onChange={(e) => updateCourseDate(i, 'date', e.target.value)}
+                          className="bg-white rounded-xl p-3 text-xs outline-none focus:ring-1 focus:ring-[#8B9D77]/20 transition-all"
+                        />
+                        <select 
+                          value={formData.courseDates[i]?.time || '全天 (09:30-15:30)'}
+                          onChange={(e) => updateCourseDate(i, 'time', e.target.value)}
+                          className="bg-white rounded-xl p-3 text-xs outline-none focus:ring-1 focus:ring-[#8B9D77]/20 transition-all"
+                        >
+                          <option>全天 (09:30-15:30)</option>
+                          <option>上午 (09:30-12:30)</option>
+                          <option>下午 (13:30-16:30)</option>
+                        </select>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-8 bg-[#8B9D77] text-white rounded-[2.5rem] shadow-xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-6 opacity-10">
+                    <CreditCard className="w-20 h-20" />
+                  </div>
+                  <div className="relative z-10 flex justify-between items-end">
+                    <div>
+                      <div className="text-[10px] font-black uppercase opacity-70 tracking-widest mb-1">Estimated Amount</div>
+                      <div className="text-xs font-bold opacity-90">{formData.days} 天 ｜ {formData.peopleCount} 位學員</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-3xl font-black italic tracking-tight">{calculateTotalTWD().toLocaleString()}</div>
+                      <div className="text-[10px] font-black opacity-70 uppercase tracking-widest">TWD</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="grid grid-cols-4 md:grid-cols-7 gap-2">
+                    {levelOptions[formData.type].map((opt) => (
+                      <button 
+                        key={opt.lv}
+                        onClick={() => setFormData({...formData, level: opt.lv})}
+                        className={`py-3 rounded-xl text-xs font-bold transition-all border ${formData.level === opt.lv ? 'bg-[#8B9D77] border-[#8B9D77] text-white shadow-md' : 'bg-slate-50 border-transparent text-slate-400 hover:border-slate-200'}`}
+                      >{opt.lv}</button>
+                    ))}
+                  </div>
+                  <div className="p-5 bg-[#FEFCE8] rounded-2xl border border-[#EAB308]/10 text-[11px] text-slate-500 italic leading-relaxed">
+                    {levelOptions[formData.type].find(o => o.lv === formData.level)?.desc}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="space-y-8 animate-in fade-in">
+                <div className="flex items-start gap-4 p-6 bg-[#E2ECE9] border border-[#8B9D77]/20 rounded-[2.5rem]">
+                  <ShieldCheck className="w-6 h-6 text-[#8B9D77] mt-1 flex-shrink-0" />
+                  <div className="text-[11px] text-[#5A6E4F] leading-relaxed">
+                    <h4 className="font-bold text-sm mb-2 text-slate-800">Snow Way 依滑雪場安全與保險規範，已投保：</h4>
+                    <p className="mb-1">✔️ 傷害保險</p>
+                    <p className="mb-3">✔️ 賠償責任保險</p>
+                    <p className="mb-3 opacity-80">為練習課程權益，請【每位學員】提供以下資料，以利保險建檔用。</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
+                  {Array.from({ length: formData.peopleCount }).map((_, i) => (
+                    <div key={i} className="p-6 bg-slate-50 rounded-[2rem] space-y-4 shadow-sm border border-slate-100">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-[10px] font-black text-[#8B9D77] uppercase italic">Student {i + 1}</span>
+                        <Users className="w-4 h-4 text-slate-200" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <input 
+                          placeholder="護照中文姓名" 
+                          value={formData.students[i].nameCN}
+                          onChange={(e) => updateStudent(i, 'nameCN', e.target.value)}
+                          className="bg-white rounded-xl p-3 text-xs outline-none focus:ring-1 focus:ring-[#8B9D77]/20"
+                        />
+                        <input 
+                          placeholder="護照英文姓名" 
+                          value={formData.students[i].nameEN}
+                          onChange={(e) => updateStudent(i, 'nameEN', e.target.value)}
+                          className="bg-white rounded-xl p-3 text-xs outline-none focus:ring-1 focus:ring-[#8B9D77]/20"
+                        />
+                        <input 
+                          type="date" 
+                          value={formData.students[i].birthday}
+                          onChange={(e) => updateStudent(i, 'birthday', e.target.value)}
+                          className="bg-white rounded-xl p-3 text-xs outline-none"
+                        />
+                        <select 
+                          value={formData.students[i].gender}
+                          onChange={(e) => updateStudent(i, 'gender', e.target.value)}
+                          className="bg-white rounded-xl p-3 text-xs outline-none"
+                        >
+                          <option>男</option>
+                          <option>女</option>
+                        </select>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="space-y-8 animate-in fade-in">
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black text-slate-300 uppercase ml-1 block">付款方式偏好</label>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {['台幣匯款', '日幣匯款', '現場現金'].map((method) => (
+                      <button 
+                        key={method}
+                        onClick={() => setFormData({...formData, paymentMethod: method})}
+                        className={`p-4 rounded-2xl border text-xs font-bold transition-all flex items-center justify-center gap-2 ${formData.paymentMethod === method ? 'bg-[#8B9D77] border-[#8B9D77] text-white shadow-md' : 'bg-slate-50 border-transparent text-slate-400 hover:border-slate-200'}`}
+                      >
+                        {method === '台幣匯款' && <CreditCard className="w-3 h-3" />}
+                        {method}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-300 uppercase ml-1">優惠代碼</label>
+                    <input 
+                      type="text" 
+                      value={formData.promoCode}
+                      onChange={(e) => setFormData({...formData, promoCode: e.target.value})}
+                      placeholder="如有代碼請輸入"
+                      className="w-full bg-slate-50 rounded-2xl p-4 outline-none text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-300 uppercase ml-1">指定教練</label>
+                    <input 
+                      type="text" 
+                      value={formData.coach}
+                      onChange={(e) => setFormData({...formData, coach: e.target.value})}
+                      placeholder="教練姓名 (非必填)"
+                      className="w-full bg-slate-50 rounded-2xl p-4 outline-none text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-300 uppercase ml-1">本次滑雪目標 (必填)</label>
+                  <textarea 
+                    rows="3"
+                    value={formData.target}
+                    onChange={(e) => setFormData({...formData, target: e.target.value})}
+                    placeholder="請告訴我們您想學會什麼..."
+                    className="w-full bg-slate-50 rounded-[2rem] p-5 outline-none text-sm shadow-inner"
+                  ></textarea>
+                </div>
+
+                <div className="p-8 bg-[#8B9D77] text-white rounded-[3rem] shadow-xl flex justify-between items-end">
+                   <div>
+                     <div className="text-[10px] font-black uppercase opacity-70">Final Estimation</div>
+                     <div className="text-sm font-bold">{formData.days} 天 ｜ {formData.peopleCount} 人</div>
+                     {(formData.paymentMethod === '日幣匯款' || formData.paymentMethod === '現場現金') && (
+                       <div className="text-[10px] mt-2 font-bold bg-white/20 px-2 py-1 rounded-lg">
+                         預算日幣: ¥{calculateTotalJPY().toLocaleString()}
+                       </div>
+                     )}
+                   </div>
+                   <div className="text-right">
+                     <div className="text-3xl font-black italic">{calculateTotalTWD().toLocaleString()}</div>
+                     <div className="text-[10px] font-black opacity-70 uppercase tracking-widest">TWD</div>
+                   </div>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-12 flex items-center justify-between">
+              {step > 1 ? (
+                <button 
+                  onClick={() => setStep(step - 1)}
+                  disabled={isSubmitting}
+                  className="text-slate-400 font-bold text-[10px] flex items-center gap-1 uppercase tracking-widest disabled:opacity-50"
+                >
+                  <ChevronLeft className="w-4 h-4" /> Back
+                </button>
+              ) : (
+                <button 
+                  onClick={() => setView('home')}
+                  className="text-slate-400 font-bold text-[10px] uppercase tracking-widest"
+                >
+                  Cancel
+                </button>
+              )}
+
+              {step < 4 ? (
+                <button 
+                  onClick={handleNext}
+                  className={`px-10 py-3 rounded-2xl font-black text-[10px] tracking-[0.3em] shadow-md transition-all ${step === 1 && (!formData.agree || !formData.name || !formData.email) ? 'bg-slate-100 text-slate-300' : 'bg-[#8B9D77] text-white'}`}
+                >
+                  NEXT
+                </button>
+              ) : (
+                <button 
+                  onClick={handleSubmit}
+                  disabled={isSubmitting || !formData.target}
+                  className="bg-[#7C3AED] text-white px-12 py-3 rounded-2xl font-black text-[10px] tracking-[0.3em] shadow-xl hover:scale-105 active:scale-95 transition-all disabled:bg-slate-300"
+                >
+                  {isSubmitting ? 'SENDING...' : 'SUBMIT'}
+                </button>
+              )}
+            </div>
+          </section>
+        )}
+      </main>
+
+      <footer className="relative z-10 py-12 text-center">
+        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">© Snow Way Ski School since 2024</p>
+      </footer>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(139, 157, 119, 0.2);
+          border-radius: 10px;
+        }
+      `}} />
+    </div>
+  );
+}
