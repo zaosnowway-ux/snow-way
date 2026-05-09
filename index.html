@@ -221,17 +221,13 @@ const app = createApp({
     const ipr = computed(() => INP[ick.value] || INP['']);
     const icl = computed(() => ipr.value.label);
     const irs = computed(() => [{v:'double',name:'雙人房',note:'適合 2 人入住',price:ipr.value.double},{v:'triple',name:'三人房',note:'適合 3 人入住',price:ipr.value.triple},{v:'single',name:'單人床位',note:'單一床位計價',price:ipr.value.single}]);
-    const irp = computed(() => {
-      const prices = irs.value;
-      if (!prices || prices.length < 3) return 0;
-      return g.nd*prices[0].price + g.nt2*prices[1].price + g.ns*prices[2].price;
-    });
+    const irp = computed(() => { const p=irs.value; if(!p||p.length<3)return 0; return g.nd*p[0].price+g.nt2*p[1].price+g.ns*p[2].price; });
     const dPrice = computed(() => irs.value && irs.value[0] ? irs.value[0].price : 0);
     const tPrice = computed(() => irs.value && irs.value[1] ? irs.value[1].price : 0);
     const sPrice = computed(() => irs.value && irs.value[2] ? irs.value[2].price : 0);
     const irn = computed(() => { const parts=[]; if(g.nd>0) parts.push('雙人房'+g.nd+'間'); if(g.nt2>0) parts.push('三人房'+g.nt2+'間'); if(g.ns>0) parts.push('單人床位'+g.ns+'個'); return parts.join('、'); });
     const inh = computed(() => { if(!g.ci||!g.co)return 0; const d=Math.round((new Date(g.co)-new Date(g.ci))/86400000); return d>0?d:0; });
-    const itl = computed(() => inh.value * (g.nd*irs.value[0].price + g.nt2*irs.value[1].price + g.ns*irs.value[2].price));
+    const itl = computed(() => { const p=irs.value; if(!p||p.length<3)return 0; return inh.value*(g.nd*p[0].price+g.nt2*p[1].price+g.ns*p[2].price); });
     const idp = computed(() => Math.round(itl.value * 0.5));
     const ibl = computed(() => itl.value - idp.value);
     const inn2 = () => {
