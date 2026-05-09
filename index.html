@@ -1,500 +1,251 @@
-
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNOW WAY | 預約系統</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-#bapp{font-family:"Noto Sans TC",system-ui,sans-serif;background:#FBF6E3;color:#3A2E1A;max-width:520px;margin:0 auto;min-height:600px;border-radius:16px;overflow:hidden;border:1px solid rgba(58,46,26,.15)}
+html,body{min-height:100%;background:#E8E2C8}
+#app{font-family:"Noto Sans TC",system-ui,sans-serif;color:#3A2E1A;min-height:100vh}
 :root{--cr:#FBF6E3;--c2:#F5EDCC;--c3:#EDE5BE;--ik:#3A2E1A;--mu:#8A7A58;--m2:#A89870;--gd:#C8820A;--gl:rgba(200,130,10,.13);--gb:rgba(200,130,10,.35);--rd:#9B3A2A;--bd:rgba(58,46,26,.13);--b2:rgba(58,46,26,.07)}
-.hdr{background:#F0E8CC;padding:22px 20px 14px;border-bottom:1px solid rgba(58,46,26,.1)}
+.mob{display:block;background:var(--cr);min-height:100vh}
+.desk{display:none}
+@media(min-width:768px){.mob{display:none}.desk{display:flex;min-height:100vh}.d-left{width:360px;flex-shrink:0;background:#3A2E1A;padding:44px 36px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:space-between}.d-right{flex:1;background:var(--cr);overflow-y:auto;padding:40px 48px 80px}}
+.hdr{background:#F0E8CC;padding:20px 18px 12px;border-bottom:1px solid rgba(58,46,26,.1)}
+.gold-line{height:2px;background:linear-gradient(90deg,transparent,#C8820A,#E2A830,transparent);margin-top:10px}
 .lsub{font-size:8px;letter-spacing:.28em;color:var(--m2);margin-bottom:4px;font-family:monospace}
 .lmain{font-size:22px;color:var(--ik);font-style:italic;font-weight:400}
 .ltag{font-size:8px;letter-spacing:.15em;color:var(--mu);margin-top:3px;font-family:monospace}
-.gold-line{height:2px;background:linear-gradient(90deg,transparent,#C8820A,#E2A830,transparent);margin-top:12px}
-.home{padding:24px 16px 40px}
-.home-intro{text-align:center;margin-bottom:24px}
-.home-brand{font-size:10px;color:var(--m2);letter-spacing:.15em;margin-bottom:6px;font-family:monospace}
-.home-tagline{font-size:13px;color:var(--mu)}
-.cc{background:var(--c2);border:1.5px solid var(--bd);border-radius:20px;padding:22px 20px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:16px;position:relative;overflow:hidden;margin-bottom:12px}
-.cc::before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,rgba(255,255,255,.5) 0%,transparent 60%);pointer-events:none}
-.cc:hover{border-color:var(--gd);background:#EEDED8;transform:translateY(-1px);box-shadow:0 4px 16px rgba(200,130,10,.12)}
+.ll-sub{font-size:9px;letter-spacing:.28em;color:#A08050;margin-bottom:8px;font-family:monospace}
+.ll-main{font-size:34px;color:#FBF6E3;font-style:italic;font-weight:300;line-height:1.1;margin-bottom:8px}
+.ll-tag{font-size:9px;letter-spacing:.18em;color:#6A5A40;font-family:monospace;margin-bottom:28px}
+.ll-div{height:1px;background:linear-gradient(90deg,transparent,#C8820A,transparent);margin-bottom:28px}
+.ll-desc{font-size:12px;color:#7A6A50;line-height:1.9}
+.ll-type-label{font-size:9px;letter-spacing:.18em;color:#6A5A40;font-family:monospace;margin-bottom:10px;margin-top:28px}
+.ll-btn{width:100%;padding:11px 15px;border-radius:10px;border:1px solid rgba(200,130,10,.25);background:transparent;color:#8A7050;font-size:12px;cursor:pointer;text-align:left;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.ll-btn:hover,.ll-btn.on{background:rgba(200,130,10,.12);border-color:var(--gd);color:#C8820A}
+.ll-footer{font-size:9px;color:#3A2A18;font-family:monospace}
+.hsec{padding:24px 16px 40px}
+.cc{background:var(--c2);border:1.5px solid var(--bd);border-radius:20px;padding:20px 18px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:16px;position:relative;overflow:hidden;margin-bottom:12px}
+.cc::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.5) 0%,transparent 60%);pointer-events:none}
+.cc:hover{border-color:var(--gd);transform:translateY(-1px);box-shadow:0 4px 16px rgba(200,130,10,.12)}
 .cc:active{transform:scale(.98)}
-.cc-icon{width:52px;height:52px;border-radius:14px;background:rgba(200,130,10,.12);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
-.cc-body{flex:1}
-.cc-title{font-size:16px;font-weight:500;color:var(--ik);margin-bottom:4px}
-.cc-sub{font-size:11px;color:var(--mu);line-height:1.6}
-.cc-arr{font-size:22px;color:var(--m2)}
-.main{padding:14px 14px 40px}
-.back-row{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mu);cursor:pointer;margin-bottom:14px;padding:4px 0}
+.cc-icon{width:50px;height:50px;border-radius:14px;background:rgba(200,130,10,.12);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.cc-body{flex:1}.cc-title{font-size:15px;font-weight:500;color:var(--ik);margin-bottom:3px}.cc-sub{font-size:11px;color:var(--mu);line-height:1.6}.cc-arr{font-size:20px;color:var(--m2)}
+.fsec{padding:14px 16px 60px}.desk-form{max-width:480px}.desk-home{max-width:480px}
+.back-row{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mu);cursor:pointer;margin-bottom:16px;padding:4px 0}
 .card{background:var(--c2);border:1px solid var(--bd);border-radius:18px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden}
-.card::before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,rgba(255,255,255,.4) 0%,transparent 55%);pointer-events:none}
+.card::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.4) 0%,transparent 55%);pointer-events:none}
 .ci{background:var(--cr);border:1px solid var(--b2);border-radius:11px;padding:13px;margin-bottom:12px}
-.sl{font-family:monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--mu);display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.sl::after{content:"";flex:1;height:1px;background:var(--bd)}
-.pi{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.ps{font-family:monospace;font-size:9px;color:var(--m2)}
-.plb{font-size:11px;color:var(--gd);font-weight:500}
-.pb{height:3px;background:var(--bd);border-radius:99px;overflow:hidden;margin-bottom:18px}
-.pf{height:100%;background:linear-gradient(90deg,var(--gd),#E2A830);border-radius:99px;transition:width .5s}
+.sl{font-family:monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--mu);display:flex;align-items:center;gap:8px;margin-bottom:12px}.sl::after{content:"";flex:1;height:1px;background:var(--bd)}
+.pi{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}.ps{font-family:monospace;font-size:9px;color:var(--m2)}.plb{font-size:11px;color:var(--gd);font-weight:500}
+.pb{height:3px;background:var(--bd);border-radius:99px;overflow:hidden;margin-bottom:18px}.pf{height:100%;background:linear-gradient(90deg,var(--gd),#E2A830);border-radius:99px;transition:width .5s}
 .fl{font-family:monospace;font-size:9px;color:var(--mu);display:block;margin-bottom:6px}
-.fi{width:100%;background:var(--cr);border:1px solid var(--bd);border-radius:10px;color:var(--ik);padding:9px 12px;font-size:14px;outline:none;-webkit-appearance:none;font-family:inherit;transition:border-color .2s,box-shadow .2s}
-.fi:focus{border-color:var(--gd);box-shadow:0 0 0 2px rgba(200,130,10,.12)}
-.fi::placeholder{color:var(--m2);font-size:12px}
+.fi{width:100%;background:var(--cr);border:1px solid var(--bd);border-radius:10px;color:var(--ik);padding:10px 13px;font-size:14px;outline:none;-webkit-appearance:none;font-family:inherit;transition:border-color .2s,box-shadow .2s}
+.fi:focus{border-color:var(--gd);box-shadow:0 0 0 2px rgba(200,130,10,.12)}.fi::placeholder{color:var(--m2);font-size:13px}
 textarea.fi{resize:none;line-height:1.6}
-select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A7A58' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px;cursor:pointer}
+select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A7A58' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:32px;cursor:pointer}
 input[type=date].fi{color-scheme:light}
 .cw{display:flex;gap:10px;align-items:flex-start;cursor:pointer;padding:9px 0}
 .cb{width:19px;height:19px;flex-shrink:0;margin-top:1px;border:1.5px solid var(--bd);border-radius:6px;background:var(--cr);display:flex;align-items:center;justify-content:center;transition:all .15s}
-.cb.on{background:var(--gd);border-color:var(--gd)}
-.cb.on::after{content:"✓";color:white;font-size:11px;font-weight:700}
+.cb.on{background:var(--gd);border-color:var(--gd)}.cb.on::after{content:"\2713";color:white;font-size:11px;font-weight:700}
 .cl{font-size:12px;color:var(--ik);line-height:1.6}
-.pill-row{display:flex;gap:7px;flex-wrap:wrap}
-.pill{flex:1;min-width:36px;padding:10px 4px;border:1.5px solid var(--bd);border-radius:10px;font-size:13px;font-weight:500;color:var(--mu);background:var(--cr);text-align:center;cursor:pointer;transition:all .15s;font-family:inherit}
-.pill.on{border-color:var(--gd);color:#FBF6E3;background:var(--gd);font-weight:600;box-shadow:0 2px 8px rgba(200,130,10,.25)}
-.pill:not(.on):hover{border-color:var(--m2)}
-.board-btn{flex:1;padding:12px 8px;border:1.5px solid var(--bd);border-radius:11px;font-size:13px;font-weight:500;color:var(--mu);background:var(--cr);cursor:pointer;transition:all .15s;font-family:inherit}
-.board-btn.on{border-color:var(--gd);color:var(--gd);background:var(--gl);font-weight:600;box-shadow:inset 0 0 0 1px var(--gd)}
+.pr{display:flex;gap:7px;flex-wrap:wrap}
+.pp{flex:1;min-width:36px;padding:10px 4px;border:1.5px solid var(--bd);border-radius:10px;font-size:13px;font-weight:500;color:var(--mu);background:var(--cr);text-align:center;cursor:pointer;transition:all .15s;font-family:inherit}
+.pp.on{border-color:var(--gd);color:#FBF6E3;background:var(--gd);font-weight:600;box-shadow:0 2px 8px rgba(200,130,10,.25)}
+.bdb{flex:1;padding:12px 8px;border:1.5px solid var(--bd);border-radius:11px;font-size:13px;font-weight:500;color:var(--mu);background:var(--cr);cursor:pointer;transition:all .15s;font-family:inherit}
+.bdb.on{border-color:var(--gd);color:var(--gd);background:var(--gl);font-weight:600;box-shadow:inset 0 0 0 1px var(--gd)}
 .lvb{border:1.5px solid var(--bd);border-radius:11px;padding:11px 13px;cursor:pointer;background:var(--cr);margin-bottom:6px;width:100%;text-align:left;transition:all .15s;position:relative}
-.lvb.on{border-color:var(--gd);background:#FCEFD8;box-shadow:0 2px 8px rgba(200,130,10,.15)}
-.lvb.on::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:11px 0 0 11px;background:var(--gd)}
-.lvh{display:flex;align-items:center;gap:8px;margin-bottom:3px}
-.lvt{font-family:monospace;font-size:10px;color:var(--gd);font-weight:500}
-.lvn{font-size:13px;font-weight:500;color:var(--ik)}
-.lvb.on .lvn{color:var(--gd)}
-.lvd{font-size:11px;color:var(--mu);line-height:1.5;padding-left:34px}
+.lvb.on{border-color:var(--gd);background:#FCEFD8;box-shadow:0 2px 8px rgba(200,130,10,.12)}.lvb.on::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:11px 0 0 11px;background:var(--gd)}
+.lvh{display:flex;align-items:center;gap:8px;margin-bottom:3px}.lvt{font-family:monospace;font-size:10px;color:var(--gd);font-weight:500}.lvn{font-size:13px;font-weight:500;color:var(--ik)}.lvb.on .lvn{color:var(--gd)}.lvd{font-size:11px;color:var(--mu);line-height:1.5;padding-left:34px}
 .rb{border:1.5px solid var(--bd);border-radius:12px;padding:13px 15px;cursor:pointer;background:var(--cr);display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:8px;transition:all .15s}
-.rb.on{border-color:var(--gd);background:#FCEFD8;box-shadow:0 2px 8px rgba(200,130,10,.15)}
-.rn{font-size:13px;font-weight:500;color:var(--ik)}
-.rb.on .rn{color:var(--gd)}
-.rnt{font-size:10px;color:var(--mu);margin-top:2px}
-.rp{font-family:monospace;font-size:14px;color:var(--gd);font-weight:600;text-align:right}
-.rpp{font-size:10px;color:var(--m2)}
-.db{border:1px solid var(--bd);border-radius:11px;padding:13px;background:var(--cr);margin-bottom:9px}
-.dt{font-family:monospace;font-size:9px;color:var(--gd);letter-spacing:.15em;margin-bottom:9px;font-weight:500}
-/* 付款方式 */
-.pay-q{background:var(--cr);border:1px solid var(--bd);border-radius:11px;padding:14px;margin-bottom:12px}
-.pay-q-label{font-size:12px;font-weight:500;color:var(--ik);margin-bottom:10px}
-.pay-q-opts{display:flex;gap:8px}
-.pay-q-btn{flex:1;padding:10px 8px;border:1.5px solid var(--bd);border-radius:10px;font-size:12px;font-weight:500;color:var(--mu);background:var(--cr);cursor:pointer;transition:all .15s;font-family:inherit;text-align:center}
-.pay-q-btn.on{border-color:var(--gd);color:var(--gd);background:var(--gl);font-weight:600}
-.po{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--b2);cursor:pointer}
-.po:last-child{border-bottom:none}
-.pn{font-size:12px;font-weight:500;color:var(--ik)}
-.pd{font-size:10px;color:var(--mu);margin-top:2px}
-.pxb{background:var(--gl);border:1.5px solid var(--gb);border-radius:12px;padding:13px 15px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.pxl{font-size:11px;color:var(--mu)}
-.pxv{font-family:monospace;font-size:16px;color:var(--gd);font-weight:600}
-.sr{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--b2);font-size:12px}
-.sr:last-child{border-bottom:none}
-.sk{color:var(--mu)}
-.sv{color:var(--ik);font-weight:500;text-align:right;max-width:60%}
+.rb.on{border-color:var(--gd);background:#FCEFD8;box-shadow:0 2px 8px rgba(200,130,10,.12)}.rn{font-size:13px;font-weight:500;color:var(--ik)}.rb.on .rn{color:var(--gd)}.rnt{font-size:10px;color:var(--mu);margin-top:2px}.rp{font-family:monospace;font-size:14px;color:var(--gd);font-weight:600;text-align:right}.rpp{font-size:10px;color:var(--m2)}
+.db{border:1px solid var(--bd);border-radius:11px;padding:13px;background:var(--cr);margin-bottom:9px}.dt{font-family:monospace;font-size:9px;color:var(--gd);letter-spacing:.15em;margin-bottom:9px;font-weight:500}
+.pq{background:var(--cr);border:1px solid var(--bd);border-radius:11px;padding:14px;margin-bottom:12px}.pql{font-size:12px;font-weight:500;color:var(--ik);margin-bottom:10px}.pqo{display:flex;gap:8px}
+.pqb{flex:1;padding:10px 8px;border:1.5px solid var(--bd);border-radius:10px;font-size:12px;font-weight:500;color:var(--mu);background:var(--cr);cursor:pointer;transition:all .15s;font-family:inherit;text-align:center}.pqb.on{border-color:var(--gd);color:var(--gd);background:var(--gl);font-weight:600}
+.po{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--b2);cursor:pointer}.po:last-child{border-bottom:none}.pn{font-size:12px;font-weight:500;color:var(--ik)}.pd{font-size:10px;color:var(--mu);margin-top:2px}
+.pxb{background:var(--gl);border:1.5px solid var(--gb);border-radius:12px;padding:13px 15px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.pxl{font-size:11px;color:var(--mu)}.pxv{font-family:monospace;font-size:16px;color:var(--gd);font-weight:600}
+.sr{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--b2);font-size:12px}.sr:last-child{border-bottom:none}.sk{color:var(--mu)}.sv{color:var(--ik);font-weight:500;text-align:right;max-width:60%}
 .bp{width:100%;padding:14px;background:var(--ik);color:var(--cr);border:none;border-radius:12px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;position:relative;overflow:hidden;transition:all .15s}
-.bp::after{content:"";position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gd),transparent)}
-.bp:active{transform:scale(.98)}
-.bp:disabled{background:var(--c3);color:var(--m2);cursor:not-allowed}
-.bp:disabled::after{display:none}
+.bp::after{content:"";position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gd),transparent)}.bp:active{transform:scale(.98)}
+.bp:disabled{background:var(--c3);color:var(--m2);cursor:not-allowed}.bp:disabled::after{display:none}
 .bb{width:100%;padding:11px;background:transparent;color:var(--mu);border:1px solid var(--bd);border-radius:12px;font-size:12px;cursor:pointer;font-family:inherit;margin-bottom:9px}
 .er{background:rgba(155,58,42,.07);border:1px solid rgba(155,58,42,.25);border-radius:11px;padding:11px 13px;font-size:11px;color:var(--rd);margin-bottom:11px}
-.nt{background:var(--cr);border:1px solid var(--b2);border-radius:10px;padding:12px 13px;font-size:10px;color:var(--mu);line-height:1.75;margin-bottom:12px}
-.ntl{font-size:11px;font-weight:500;color:var(--gd);margin-bottom:5px}
+.nt{background:var(--cr);border:1px solid var(--b2);border-radius:10px;padding:12px 13px;font-size:10px;color:var(--mu);line-height:1.75;margin-bottom:12px}.ntl{font-size:11px;font-weight:500;color:var(--gd);margin-bottom:5px}
 .ct{display:inline-block;padding:3px 10px;background:var(--gl);border:1px solid var(--gb);border-radius:20px;font-family:monospace;font-size:10px;color:var(--gd);margin-top:7px}
-.sel-hint{font-size:10px;color:var(--gd);margin-top:6px;font-family:monospace}
-.g{margin-bottom:11px}.gs{margin-bottom:7px}
-.fa{animation:fa .3s cubic-bezier(.16,1,.3,1) both}
-@keyframes fa{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.sw{text-align:center;padding:44px 16px}
-.si{width:64px;height:64px;background:var(--gl);border:1.5px solid var(--gb);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px}
+.sh{font-size:10px;color:var(--gd);margin-top:6px;font-family:monospace}.g{margin-bottom:11px}.gs{margin-bottom:7px}
+.fa{animation:fa .3s cubic-bezier(.16,1,.3,1) both}@keyframes fa{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sw{text-align:center;padding:44px 16px}.si{width:64px;height:64px;background:var(--gl);border:1.5px solid var(--gb);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px}
 input{font-size:14px!important}
 </style>
-
-<div id="bapp">
-  <div class="hdr">
-    <div class="lsub">SNOW WAY × 雪之道</div>
-    <div class="lmain">Snow Way</div>
-    <div class="ltag">山形藏王 · 越後湯澤</div>
-    <div class="gold-line"></div>
+</head>
+<body>
+<div id="app">
+<div class="mob">
+  <div class="hdr"><div class="lsub">SNOW WAY &times; 雪之道</div><div class="lmain">Snow Way</div><div class="ltag">山形藏王 &middot; 越後湯澤</div><div class="gold-line"></div></div>
+  <div v-if="view==='home'" class="hsec fa">
+    <div style="text-align:center;margin-bottom:22px"><div style="font-size:10px;color:var(--m2);letter-spacing:.15em;font-family:monospace;margin-bottom:6px">SELECT YOUR EXPERIENCE</div><div style="font-size:13px;color:var(--mu)">請選擇預約類型</div></div>
+    <div class="cc" @click="go('ski')"><div class="cc-icon">&#x26F7;</div><div class="cc-body"><div class="cc-title">滑雪課程</div><div class="cc-sub">單板 / 雙板 / 幼兒教學<br>專業私人班指導</div></div><div class="cc-arr">&#x203A;</div></div>
+    <div class="cc" @click="go('inn')"><div class="cc-icon">&#x1F3E0;</div><div class="cc-body"><div class="cc-title">朝雪民宿</div><div class="cc-sub">山形在地溫馨住宿<br>感受家的溫度</div></div><div class="cc-arr">&#x203A;</div></div>
   </div>
-
-  <!-- HOME -->
-  <div v-if="view==='home'" class="home fa">
-    <div class="home-intro">
-      <div class="home-brand">SELECT YOUR EXPERIENCE</div>
-      <div class="home-tagline">請選擇預約類型</div>
-    </div>
-    <div class="cc" @click="go('ski')">
-      <div class="cc-icon">⛷</div>
-      <div class="cc-body"><div class="cc-title">滑雪課程</div><div class="cc-sub">單板 / 雙板 / 幼兒教學<br>專業私人班指導</div></div>
-      <div class="cc-arr">›</div>
-    </div>
-    <div class="cc" @click="go('inn')">
-      <div class="cc-icon">🏠</div>
-      <div class="cc-body"><div class="cc-title">朝雪民宿</div><div class="cc-sub">山形在地溫馨住宿<br>感受家的溫度</div></div>
-      <div class="cc-arr">›</div>
-    </div>
-  </div>
-
-  <!-- SUCCESS -->
   <div v-else-if="view==='done'" class="sw fa">
-    <div class="si">✓</div>
+    <div class="si">&#x2713;</div>
     <div style="font-size:22px;color:var(--ik);font-style:italic;margin-bottom:8px">{{ bk==='inn'?'預約完成':'報名完成' }}</div>
     <div style="font-size:12px;color:var(--mu)">確認信已寄至您的 Email</div>
     <div style="font-family:monospace;font-size:14px;color:var(--gd);margin:14px 0 4px">{{ did }}</div>
     <div style="font-size:10px;color:var(--m2);margin-bottom:28px">請保存此編號以便查詢狀態</div>
     <button class="bp" @click="rst">返回首頁</button>
   </div>
-
-  <!-- SKI -->
-  <div v-else-if="view==='ski'" class="main fa">
-    <div class="back-row" @click="view='home';ss=1;se=''">← 返回首頁</div>
-    <div class="pi"><span class="ps">STEP {{ ss }} / 4</span><span class="plb">{{ sl[ss-1] }}</span></div>
-    <div class="pb"><div class="pf" :style="{width:(ss/4*100)+'%'}"></div></div>
-
-    <!-- S1 -->
-    <div v-if="ss===1" class="fa">
-      <div class="card">
-        <div class="sl">條款確認</div>
-        <div class="nt" style="max-height:130px;overflow-y:auto">
-          <div class="ntl">預約與取消條款</div>
-          <p>· 46天前取消：訂金全額退還</p><p>· 31–45天內：訂金退 20%</p><p>· 30天內：訂金不退還</p><p>· 更改日期：不收費</p>
-          <p style="margin-top:7px;color:var(--m2)">不可抗力（停航、流行病、雪場全停）：扣手續費後全額退費或可改期。個人因素恕不退費。</p>
-        </div>
-        <div class="cw" @click="f.t=!f.t"><div class="cb" :class="{on:f.t}"></div><span class="cl">我已閱讀並同意預約與取消條款 *</span></div>
-        <div class="cw" @click="f.p=!f.p"><div class="cb" :class="{on:f.p}"></div><span class="cl" style="color:var(--mu)">我同意課程期間照片影片作為 SNOW WAY 宣傳所用（選填）</span></div>
-      </div>
-      <div class="card">
-        <div class="sl">聯絡人資料</div>
-        <div class="g"><label class="fl">預約大名／暱稱 *</label><input v-model="f.name" type="text" placeholder="姓名或暱稱" class="fi"></div>
-        <div class="g"><label class="fl">LINE ID *</label><input v-model="f.lid" type="text" placeholder="@yourlineid" class="fi"></div>
-        <div><label class="fl">Email *</label><input v-model="f.email" type="email" placeholder="確認信寄送至此" class="fi"></div>
-      </div>
-      <div v-if="se" class="er">{{ se }}</div>
-      <button class="bp" @click="sn">下一步</button>
+  <div v-else class="fsec">
+    <div class="back-row" @click="view='home';ss=1;is=1;se='';ie=''">&#x2190; 返回首頁</div>
+    <template v-if="view==='ski'"><div class="pi"><span class="ps">STEP {{ ss }} / 4</span><span class="plb">{{ sl[ss-1] }}</span></div><div class="pb"><div class="pf" :style="{width:(ss/4*100)+'%'}"></div></div></template>
+    <template v-if="view==='inn'"><div class="pi"><span class="ps">STEP {{ is }} / 3</span><span class="plb">{{ il[is-1] }}</span></div><div class="pb"><div class="pf" :style="{width:(is/3*100)+'%'}"></div></div></template>
+    <ski-form v-if="view==='ski'" :f="f" :ss="ss" :se="se" :cls="cls" :skd="skd" :skb="skb" :skt="skt" :skda="skda" :skdp="skdp" :skbl="skbl" :po-twd="poTwd" :po-no-twd="poNoTwd" :rl="rl" :ssl="ssl" :pl="pl" :sn="sn" :sbski="sbski" :sub="sub" :ad="ad" @update-ss="ss=$event" @update-se="se=$event"></ski-form>
+    <inn-form v-if="view==='inn'" :g="g" :is2="is" :ie="ie" :irs="irs" :irp="irp" :irn="irn" :inh="inh" :itl="itl" :idp="idp" :ibl="ibl" :icl="icl" :po-twd="poTwd" :po-no-twd="poNoTwd" :pl="pl" :inn2="inn2" :sbinn="sbinn" :sub="sub" @update-is="is=$event" @update-ie="ie=$event"></inn-form>
+  </div>
+</div>
+<div class="desk">
+  <div class="d-left">
+    <div>
+      <div class="ll-sub">SNOW WAY &times; 雪之道</div>
+      <div class="ll-main">Snow<br>Way</div>
+      <div class="ll-tag">山形藏王 &middot; 越後湯澤</div>
+      <div class="ll-div"></div>
+      <div class="ll-desc"><p style="color:#C8820A;font-size:10px;font-family:monospace;letter-spacing:.12em;margin-bottom:12px">PRIVATE SKI LESSONS &amp; LODGING</p><p>專業私人滑雪教學，依照您的程度量身打造課程。</p><p style="margin-top:10px">朝雪民宿，感受山形在地的溫暖款待。</p></div>
     </div>
-
-    <!-- S2 -->
-    <div v-if="ss===2" class="fa">
-      <div class="card">
-        <div class="sl">課程資料</div>
-        <div class="g">
-          <label class="fl">上課人數 *（1–6人，私人班）</label>
-          <div class="pill-row"><button v-for="n in 6" :key="n" class="pill" :class="{on:f.hc===n}" @click="f.hc=n">{{ n }}</button></div>
-          <div v-if="f.hc" class="sel-hint">已選：{{ f.hc }} 人</div>
-        </div>
-        <div class="g">
-          <label class="fl">單板 / 雙板 *</label>
-          <div style="display:flex;gap:8px">
-            <button class="board-btn" :class="{on:f.bt==='sb'}" @click="f.bt='sb';f.lv=''">🏂 單板</button>
-            <button class="board-btn" :class="{on:f.bt==='ski'}" @click="f.bt='ski';f.lv=''">⛷ 雙板</button>
-          </div>
-          <div v-if="f.bt" class="sel-hint">已選：{{ f.bt==='sb'?'單板':'雙板' }}</div>
-        </div>
-        <div v-if="f.bt" class="g">
-          <label class="fl">學員程度 *（以同組最低者填寫）</label>
-          <div><button v-for="l in cls" :key="l.v" class="lvb" :class="{on:f.lv===l.v}" @click="f.lv=l.v">
-            <div class="lvh"><span class="lvt">{{ l.v }}</span><span class="lvn">{{ l.s }}</span></div>
-            <div class="lvd">{{ l.d }}</div>
-          </button></div>
-          <div v-if="f.lv" class="sel-hint">已選：{{ f.lv }}</div>
-        </div>
-        <div class="g">
-          <label class="fl">上課雪場 *</label>
-          <select v-model="f.rs" class="fi">
-            <option value="" disabled>請選擇雪場</option>
-            <optgroup label="山形">
-              <option value="zao">藏王溫泉滑雪場</option>
-              <option value="liza">Liza World</option>
-              <option value="yama_other">其他（請於備註說明）</option>
-            </optgroup>
-            <optgroup label="越後湯澤">
-              <option value="iwappara">岩原滑雪場</option>
-              <option value="niigata_other">其他（請於備註說明）</option>
-            </optgroup>
-          </select>
-        </div>
-        <div><label class="fl">本次滑雪目標 *</label><textarea v-model="f.goal" placeholder="例：學會基本剎車與轉彎…" class="fi" style="height:65px"></textarea></div>
+    <div>
+      <div v-if="view==='home'">
+        <div class="ll-type-label">請選擇預約類型</div>
+        <button class="ll-btn" @click="go('ski')">&#x26F7; 滑雪課程</button>
+        <button class="ll-btn" @click="go('inn')">&#x1F3E0; 朝雪民宿</button>
       </div>
-
-      <div class="card">
-        <div class="sl">日期與時段</div>
-        <div class="g">
-          <label class="fl">上課天數 *</label>
-          <div style="display:flex;align-items:center;gap:16px;margin-bottom:6px">
-            <button @click="ad(-1)" style="width:40px;height:40px;border-radius:10px;border:1.5px solid var(--bd);background:var(--cr);font-size:20px;color:var(--ik);cursor:pointer">−</button>
-            <span style="font-size:28px;font-style:italic;color:var(--ik);flex:1;text-align:center">{{ f.dy }}</span>
-            <button @click="ad(1)" style="width:40px;height:40px;border-radius:10px;border:1.5px solid var(--bd);background:var(--cr);font-size:20px;color:var(--ik);cursor:pointer">+</button>
-          </div>
-          <div class="sel-hint" style="text-align:center">{{ f.dy }} 天課程</div>
-        </div>
-        <div v-for="d in f.dy" :key="d" class="db">
-          <div class="dt">DAY {{ d }}</div>
-          <div class="gs"><input v-model="f.sc[d-1].date" type="date" class="fi"></div>
-          <select v-model="f.sc[d-1].sess" class="fi">
-            <option value="" disabled>選擇時段</option>
-            <option value="full">全天班　9:30 – 15:30</option>
-            <option value="am">上午班　9:30 – 12:30</option>
-            <option value="pm">下午班　13:30 – 16:30</option>
-          </select>
-        </div>
+      <div v-else>
+        <div class="ll-type-label">目前預約</div>
+        <div style="color:#C8820A;font-size:13px;font-family:monospace;margin-bottom:14px">{{ view==='ski'?'滑雪課程':'朝雪民宿' }}</div>
+        <button @click="view='home';ss=1;is=1;se='';ie=''" style="background:transparent;border:1px solid rgba(200,130,10,.3);border-radius:8px;color:#6A5A40;font-size:11px;padding:8px 14px;cursor:pointer;font-family:inherit">&#x2190; 返回首頁</button>
       </div>
-
-      <div class="card">
-        <div class="sl">付款方式</div>
-        <!-- 先問有沒有台幣帳戶 -->
-        <div class="pay-q">
-          <div class="pay-q-label">您是否具有台幣帳戶？</div>
-          <div class="pay-q-opts">
-            <button class="pay-q-btn" :class="{on:f.hasTwd===true}" @click="f.hasTwd=true;f.pay=''">有台幣帳戶</button>
-            <button class="pay-q-btn" :class="{on:f.hasTwd===false}" @click="f.hasTwd=false;f.pay=''">沒有台幣帳戶</button>
-          </div>
-        </div>
-        <!-- 根據選擇顯示付款選項 -->
-        <div v-if="f.hasTwd===true">
-          <div v-for="o in poTwd" :key="o.v" class="po" @click="f.pay=o.v"><div class="cb" :class="{on:f.pay===o.v}"></div><div><div class="pn">{{ o.l }}</div><div class="pd">{{ o.d }}</div></div></div>
-        </div>
-        <div v-else-if="f.hasTwd===false">
-          <div v-for="o in poNoTwd" :key="o.v" class="po" @click="f.pay=o.v"><div class="cb" :class="{on:f.pay===o.v}"></div><div><div class="pn">{{ o.l }}</div><div class="pd">{{ o.d }}</div></div></div>
-        </div>
-        <div style="margin-top:12px">
-          <label class="fl">優惠碼（選填）</label>
-          <input v-model="f.cp" type="text" placeholder="輸入優惠碼" class="fi">
-          <div v-if="skd" class="ct">✓ {{ skd }}</div>
-        </div>
-      </div>
-
-      <div v-if="f.hc&&f.dy" class="pxb"><div><div class="pxl">預估總金額</div><div style="font-size:10px;color:var(--m2);margin-top:2px">{{ f.dy }}天 {{ f.hc }}人</div></div><div class="pxv">NT$ {{ skt.toLocaleString() }}</div></div>
-
-      <div class="card">
-        <div class="sl">其他（選填）</div>
-        <div class="g"><label class="fl">指定教練（請事先與官方 LINE 確認）</label><input v-model="f.coach" type="text" placeholder="教練名稱" class="fi"></div>
-        <div class="g"><label class="fl">推薦人</label><input v-model="f.ref" type="text" placeholder="推薦人姓名或 ID" class="fi"></div>
-        <div><label class="fl">備註</label><textarea v-model="f.nt" placeholder="其他需求或說明" class="fi" style="height:65px"></textarea></div>
-      </div>
-      <div v-if="se" class="er">{{ se }}</div>
-      <button class="bb" @click="ss=1;se=''">← 上一步</button>
-      <button class="bp" @click="sn">下一步：學員資料</button>
-    </div>
-
-    <!-- S3 -->
-    <div v-if="ss===3" class="fa">
-      <div class="card">
-        <div class="sl">學員資料（投保用）</div>
-        <div class="nt"><div class="ntl">SNOW WAY 保險說明</div><p>已投保傷害保險及賠償責任保險。請每位學員分別填寫護照資料以利建檔。建議自行加保旅遊平安險。</p></div>
-        <div v-for="s in f.hc" :key="s" style="border:1.5px solid var(--bd);border-radius:11px;padding:13px;background:var(--cr);margin-bottom:9px">
-          <div class="dt">STUDENT {{ s }}</div>
-          <div class="gs"><label class="fl">護照中文姓名 *</label><input v-model="f.st[s-1].nc" type="text" placeholder="護照中文姓名" class="fi"></div>
-          <div class="gs"><label class="fl">護照英文姓名 *（需與護照相同）</label><input v-model="f.st[s-1].ne" type="text" placeholder="英文全名" class="fi"></div>
-          <div class="gs"><label class="fl">性別 *</label><select v-model="f.st[s-1].gd" class="fi"><option value="" disabled>請選擇</option><option value="M">男 / Male</option><option value="F">女 / Female</option></select></div>
-          <div><label class="fl">出生年月日 *</label><input v-model="f.st[s-1].dob" type="date" class="fi"></div>
-        </div>
-      </div>
-      <div v-if="se" class="er">{{ se }}</div>
-      <button class="bb" @click="ss=2;se=''">← 上一步</button>
-      <button class="bp" @click="sn">下一步：確認送出</button>
-    </div>
-
-    <!-- S4 -->
-    <div v-if="ss===4" class="fa">
-      <div class="card">
-        <div class="sl">預約確認</div>
-        <div class="ci" style="margin-bottom:12px">
-          <div class="sr"><span class="sk">姓名</span><span class="sv">{{ f.name }}</span></div>
-          <div class="sr"><span class="sk">LINE ID</span><span class="sv">{{ f.lid }}</span></div>
-          <div class="sr"><span class="sk">人數</span><span class="sv">{{ f.hc }} 人</span></div>
-          <div class="sr"><span class="sk">板型</span><span class="sv">{{ f.bt==='sb'?'單板':'雙板' }}</span></div>
-          <div class="sr"><span class="sk">程度</span><span class="sv">{{ f.lv }}</span></div>
-          <div class="sr"><span class="sk">雪場</span><span class="sv">{{ rl(f.rs) }}</span></div>
-          <div v-for="d in f.dy" :key="d" class="sr"><span class="sk">第 {{ d }} 天</span><span class="sv">{{ f.sc[d-1].date }} {{ ssl(f.sc[d-1].sess) }}</span></div>
-          <div class="sr"><span class="sk">付款方式</span><span class="sv">{{ pl(f.pay) }}</span></div>
-          <div v-if="skd" class="sr"><span class="sk">優惠</span><span class="sv" style="color:var(--gd)">{{ skd }}</span></div>
-        </div>
-        <div class="ci">
-          <div class="sr"><span class="sk">課程總價</span><span class="sv" style="font-family:monospace">NT$ {{ skb.toLocaleString() }}</span></div>
-          <div v-if="skda>0" class="sr"><span class="sk">折扣優惠</span><span style="font-family:monospace;color:var(--gd);font-size:12px">−NT$ {{ skda.toLocaleString() }}</span></div>
-          <div class="sr"><span style="font-size:14px;font-weight:600;color:var(--ik)">應付總額</span><span style="font-family:monospace;font-size:14px;font-weight:600;color:var(--gd)">NT$ {{ skt.toLocaleString() }}</span></div>
-          <div class="sr"><span class="sk">應付訂金（{{ f.dy }}天×5,000）</span><span class="sv" style="font-family:monospace">NT$ {{ skdp.toLocaleString() }}</span></div>
-          <div class="sr"><span class="sk">應付尾款</span><span class="sv" style="font-family:monospace">NT$ {{ skbl.toLocaleString() }}</span></div>
-        </div>
-        <p style="font-size:9px;color:var(--m2);margin-top:7px">課程費用不包含雪票、裝備、保險等。</p>
-      </div>
-      <div v-if="se" class="er">{{ se }}</div>
-      <button class="bb" @click="ss=3;se=''">← 上一步</button>
-      <button class="bp" :disabled="sub" @click="sbski">{{ sub?'送出中…':'確認送出報名' }}</button>
-      <p style="font-size:10px;color:var(--m2);text-align:center;margin-top:9px">送出後將自動寄送確認信至您的 Email</p>
+      <div class="ll-footer" style="margin-top:24px">&copy; SNOW WAY</div>
     </div>
   </div>
-
-  <!-- INN -->
-  <div v-else-if="view==='inn'" class="main fa">
-    <div class="back-row" @click="view='home';is=1;ie=''">← 返回首頁</div>
-    <div class="pi"><span class="ps">STEP {{ is }} / 3</span><span class="plb">{{ il[is-1] }}</span></div>
-    <div class="pb"><div class="pf" :style="{width:(is/3*100)+'%'}"></div></div>
-
-    <!-- I1 -->
-    <div v-if="is===1" class="fa">
-      <div class="card">
-        <div class="sl">條款確認</div>
-        <div class="nt" style="max-height:120px;overflow-y:auto">
-          <div class="ntl">預約與取消條款</div>
-          <p>· 46天前取消：訂金全額退還</p><p>· 31–45天內：訂金退 20%</p><p>· 30天內：訂金不退還</p><p>· 更改日期：不收費</p>
-        </div>
-        <div class="cw" @click="g.t=!g.t"><div class="cb" :class="{on:g.t}"></div><span class="cl">我已閱讀並同意預約與取消條款 *</span></div>
-      </div>
-      <div class="card">
-        <div class="sl">聯絡人資料</div>
-        <div class="g"><label class="fl">姓名 *</label><input v-model="g.name" type="text" placeholder="姓名或暱稱" class="fi"></div>
-        <div class="g"><label class="fl">LINE ID *</label><input v-model="g.lid" type="text" placeholder="@yourlineid" class="fi"></div>
-        <div><label class="fl">Email *</label><input v-model="g.email" type="email" placeholder="確認信寄送至此" class="fi"></div>
-      </div>
-      <div class="card">
-        <div class="sl">優惠碼</div>
-        <label class="fl">如有優惠碼請先輸入，房型定價將自動更新</label>
-        <input v-model="g.cp" type="text" placeholder="輸入優惠碼（選填）" class="fi">
-        <div v-if="icl" class="ct">✓ {{ icl }}</div>
-      </div>
-      <div v-if="ie" class="er">{{ ie }}</div>
-      <button class="bp" @click="inn">下一步</button>
+  <div class="d-right">
+    <div v-if="view==='home'" class="desk-home fa">
+      <div style="margin-bottom:28px"><div style="font-size:10px;color:var(--m2);letter-spacing:.15em;font-family:monospace;margin-bottom:8px">SELECT YOUR EXPERIENCE</div><div style="font-size:14px;color:var(--mu)">請選擇預約類型</div></div>
+      <div class="cc" @click="go('ski')"><div class="cc-icon">&#x26F7;</div><div class="cc-body"><div class="cc-title">滑雪課程</div><div class="cc-sub">單板 / 雙板 / 幼兒教學，專業私人班指導</div></div><div class="cc-arr">&#x203A;</div></div>
+      <div class="cc" @click="go('inn')"><div class="cc-icon">&#x1F3E0;</div><div class="cc-body"><div class="cc-title">朝雪民宿</div><div class="cc-sub">山形在地溫馨住宿，感受家的溫度</div></div><div class="cc-arr">&#x203A;</div></div>
     </div>
-
-    <!-- I2 -->
-    <div v-if="is===2" class="fa">
-      <div class="card">
-        <div class="sl">住宿資料</div>
-        <div class="g">
-          <label class="fl">入住人數 *</label>
-          <div class="pill-row"><button v-for="n in 8" :key="n" class="pill" :class="{on:g.hc===n}" @click="g.hc=n">{{ n }}</button></div>
-          <div v-if="g.hc" class="sel-hint">已選：{{ g.hc }} 人</div>
-        </div>
-        <div class="g">
-          <label class="fl">房型 *</label>
-          <button v-for="r in irs" :key="r.v" class="rb" :class="{on:g.rt===r.v}" @click="g.rt=r.v">
-            <div><div class="rn">{{ r.name }}</div><div class="rnt">{{ r.note }}</div></div>
-            <div class="rp">NT$ {{ r.price.toLocaleString() }}<div class="rpp">/ 晚</div></div>
-          </button>
-        </div>
-        <div class="g"><label class="fl">入住日期 *</label><input v-model="g.ci" type="date" class="fi"></div>
-        <div class="g"><label class="fl">退房日期 *</label><input v-model="g.co" type="date" class="fi"></div>
-        <div v-if="inh>0&&g.rt" class="pxb"><div><div class="pxl">{{ inh }} 晚 × NT$ {{ irp.toLocaleString() }}</div><div style="font-size:10px;color:var(--m2);margin-top:2px">訂金 = 總價 50%</div></div><div class="pxv">NT$ {{ itl.toLocaleString() }}</div></div>
-      </div>
-
-      <div class="card">
-        <div class="sl">付款方式</div>
-        <div class="pay-q">
-          <div class="pay-q-label">您是否具有台幣帳戶？</div>
-          <div class="pay-q-opts">
-            <button class="pay-q-btn" :class="{on:g.hasTwd===true}" @click="g.hasTwd=true;g.pay=''">有台幣帳戶</button>
-            <button class="pay-q-btn" :class="{on:g.hasTwd===false}" @click="g.hasTwd=false;g.pay=''">沒有台幣帳戶</button>
-          </div>
-        </div>
-        <div v-if="g.hasTwd===true">
-          <div v-for="o in poTwd" :key="o.v" class="po" @click="g.pay=o.v"><div class="cb" :class="{on:g.pay===o.v}"></div><div><div class="pn">{{ o.l }}</div><div class="pd">{{ o.d }}</div></div></div>
-        </div>
-        <div v-else-if="g.hasTwd===false">
-          <div v-for="o in poNoTwd" :key="o.v" class="po" @click="g.pay=o.v"><div class="cb" :class="{on:g.pay===o.v}"></div><div><div class="pn">{{ o.l }}</div><div class="pd">{{ o.d }}</div></div></div>
-        </div>
-      </div>
-
-      <div class="card"><div class="sl">備註（選填）</div><textarea v-model="g.nt" placeholder="特殊需求或說明" class="fi" style="height:70px"></textarea></div>
-      <div v-if="ie" class="er">{{ ie }}</div>
-      <button class="bb" @click="is=1;ie=''">← 上一步</button>
-      <button class="bp" @click="inn">下一步：確認送出</button>
+    <div v-else-if="view==='done'" class="sw fa" style="padding:60px 0">
+      <div class="si">&#x2713;</div>
+      <div style="font-size:24px;color:var(--ik);font-style:italic;margin-bottom:8px">{{ bk==='inn'?'預約完成':'報名完成' }}</div>
+      <div style="font-size:13px;color:var(--mu)">確認信已寄至您的 Email</div>
+      <div style="font-family:monospace;font-size:15px;color:var(--gd);margin:16px 0 4px">{{ did }}</div>
+      <div style="font-size:11px;color:var(--m2);margin-bottom:32px">請保存此編號以便查詢狀態</div>
+      <button class="bp" style="max-width:200px;margin:0 auto;display:block" @click="rst">返回首頁</button>
     </div>
-
-    <!-- I3 -->
-    <div v-if="is===3" class="fa">
-      <div class="card">
-        <div class="sl">預約確認</div>
-        <div class="ci" style="margin-bottom:12px">
-          <div class="sr"><span class="sk">姓名</span><span class="sv">{{ g.name }}</span></div>
-          <div class="sr"><span class="sk">LINE ID</span><span class="sv">{{ g.lid }}</span></div>
-          <div class="sr"><span class="sk">人數</span><span class="sv">{{ g.hc }} 人</span></div>
-          <div class="sr"><span class="sk">房型</span><span class="sv">{{ irn }}</span></div>
-          <div class="sr"><span class="sk">入住</span><span class="sv">{{ g.ci }}</span></div>
-          <div class="sr"><span class="sk">退房</span><span class="sv">{{ g.co }}</span></div>
-          <div class="sr"><span class="sk">晚數</span><span class="sv">{{ inh }} 晚</span></div>
-          <div class="sr"><span class="sk">付款方式</span><span class="sv">{{ pl(g.pay) }}</span></div>
-          <div v-if="icl" class="sr"><span class="sk">優惠碼</span><span class="sv" style="color:var(--gd)">{{ icl }}</span></div>
-        </div>
-        <div class="ci">
-          <div class="sr"><span class="sk">每晚房價</span><span class="sv" style="font-family:monospace">NT$ {{ irp.toLocaleString() }}</span></div>
-          <div class="sr"><span class="sk">晚數</span><span class="sv" style="font-family:monospace">{{ inh }} 晚</span></div>
-          <div class="sr"><span style="font-size:14px;font-weight:600;color:var(--ik)">總金額</span><span style="font-family:monospace;font-size:14px;font-weight:600;color:var(--gd)">NT$ {{ itl.toLocaleString() }}</span></div>
-          <div class="sr"><span class="sk">應付訂金（50%）</span><span class="sv" style="font-family:monospace">NT$ {{ idp.toLocaleString() }}</span></div>
-          <div class="sr"><span class="sk">應付尾款</span><span class="sv" style="font-family:monospace">NT$ {{ ibl.toLocaleString() }}</span></div>
-        </div>
-      </div>
-      <div v-if="ie" class="er">{{ ie }}</div>
-      <button class="bb" @click="is=2;ie=''">← 上一步</button>
-      <button class="bp" :disabled="sub" @click="sbinn">{{ sub?'送出中…':'確認送出預約' }}</button>
-      <p style="font-size:10px;color:var(--m2);text-align:center;margin-top:9px">送出後將自動寄送確認信至您的 Email</p>
+    <div v-else class="desk-form">
+      <template v-if="view==='ski'"><div class="pi"><span class="ps">STEP {{ ss }} / 4</span><span class="plb">{{ sl[ss-1] }}</span></div><div class="pb"><div class="pf" :style="{width:(ss/4*100)+'%'}"></div></div></template>
+      <template v-if="view==='inn'"><div class="pi"><span class="ps">STEP {{ is }} / 3</span><span class="plb">{{ il[is-1] }}</span></div><div class="pb"><div class="pf" :style="{width:(is/3*100)+'%'}"></div></div></template>
+      <ski-form v-if="view==='ski'" :f="f" :ss="ss" :se="se" :cls="cls" :skd="skd" :skb="skb" :skt="skt" :skda="skda" :skdp="skdp" :skbl="skbl" :po-twd="poTwd" :po-no-twd="poNoTwd" :rl="rl" :ssl="ssl" :pl="pl" :sn="sn" :sbski="sbski" :sub="sub" :ad="ad" @update-ss="ss=$event" @update-se="se=$event"></ski-form>
+      <inn-form v-if="view==='inn'" :g="g" :is2="is" :ie="ie" :irs="irs" :irp="irp" :irn="irn" :inh="inh" :itl="itl" :idp="idp" :ibl="ibl" :icl="icl" :po-twd="poTwd" :po-no-twd="poNoTwd" :pl="pl" :inn2="inn2" :sbinn="sbinn" :sub="sub" @update-is="is=$event" @update-ie="ie=$event"></inn-form>
     </div>
   </div>
 </div>
-
+</div>
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script>
-const{createApp,ref,reactive,computed}=Vue
-createApp({setup(){
-const GAS_SKI='https://script.google.com/macros/s/你的滑雪課程GAS網址/exec'
-const GAS_INN='https://script.google.com/macros/s/你的民宿GAS網址/exec'
-const view=ref('home'),bk=ref(''),did=ref(''),sub=ref(false)
-const ss=ref(1),is=ref(1),se=ref(''),ie=ref('')
-const sl=['條款與聯絡','課程配置','學員資料','確認送出']
-const il=['條款與聯絡','住宿資料','確認送出']
+const SKI_TMPL = '\n<div>\n<div v-if="ss===1" class="fa">\n  <div class="card">\n    <div class="sl">條款確認</div>\n    <div class="nt" style="max-height:130px;overflow-y:auto">\n      <div class="ntl">預約與取消條款</div>\n      <p>· 46天前取消：訂金全額退還</p><p>· 31-45天內：訂金退20%</p><p>· 30天內：訂金不退還</p><p>· 更改日期：不收費</p>\n      <p style="margin-top:7px;color:var(--m2)">不可抗力（停航、流行病、雪場全停）：扣手續費後全額退費或可改期。個人因素恕不退費。</p>\n    </div>\n    <div class="cw" @click="f.t=!f.t"><div class="cb" :class="{on:f.t}"></div><span class="cl">我已閱讀並同意預約與取消條款 *</span></div>\n    <div class="cw" @click="f.p=!f.p"><div class="cb" :class="{on:f.p}"></div><span class="cl" style="color:var(--mu)">我同意課程期間照片影片作為 SNOW WAY 宣傳所用（選填）</span></div>\n  </div>\n  <div class="card">\n    <div class="sl">聯絡人資料</div>\n    <div class="g"><label class="fl">預約大名／暱稱 *</label><input v-model="f.name" type="text" placeholder="姓名或暱稱" class="fi"></div>\n    <div class="g"><label class="fl">LINE ID *</label><input v-model="f.lid" type="text" placeholder="@yourlineid" class="fi"></div>\n    <div><label class="fl">Email *</label><input v-model="f.email" type="email" placeholder="確認信寄送至此" class="fi"></div>\n  </div>\n  <div v-if="se" class="er">{{ se }}</div>\n  <button class="bp" @click="sn">下一步</button>\n</div>\n<div v-if="ss===2" class="fa">\n  <div class="card">\n    <div class="sl">課程資料</div>\n    <div class="g">\n      <label class="fl">上課人數 *（1-6人，私人班）</label>\n      <div class="pr"><button v-for="n in 6" :key="n" class="pp" :class="{on:f.hc===n}" @click="f.hc=n">{{ n }}</button></div>\n      <div v-if="f.hc" class="sh">已選：{{ f.hc }} 人</div>\n    </div>\n    <div class="g">\n      <label class="fl">單板 / 雙板 *</label>\n      <div style="display:flex;gap:8px">\n        <button class="bdb" :class="{on:f.bt===\'sb\'}" @click="f.bt=\'sb\';f.lv=\'\'">🏂 單板</button>\n        <button class="bdb" :class="{on:f.bt===\'ski\'}" @click="f.bt=\'ski\';f.lv=\'\'">⛷ 雙板</button>\n      </div>\n      <div v-if="f.bt" class="sh">已選：{{ f.bt===\'sb\'?\'單板\':\'雙板\' }}</div>\n    </div>\n    <div v-if="f.bt" class="g">\n      <label class="fl">學員程度 *（以同組最低者填寫）</label>\n      <div>\n        <button v-for="l in cls" :key="l.v" class="lvb" :class="{on:f.lv===l.v}" @click="f.lv=l.v">\n          <div class="lvh"><span class="lvt">{{ l.v }}</span><span class="lvn">{{ l.s }}</span></div>\n          <div class="lvd">{{ l.d }}</div>\n        </button>\n      </div>\n      <div v-if="f.lv" class="sh">已選：{{ f.lv }}</div>\n    </div>\n    <div class="g">\n      <label class="fl">上課雪場 *</label>\n      <select v-model="f.rs" class="fi">\n        <option value="" disabled>請選擇雪場</option>\n        <optgroup label="山形">\n          <option value="zao">藏王溫泉滑雪場</option>\n          <option value="liza">Liza World</option>\n          <option value="yama_other">其他（請於備註說明）</option>\n        </optgroup>\n        <optgroup label="越後湯澤">\n          <option value="iwappara">岩原滑雪場</option>\n          <option value="niigata_other">其他（請於備註說明）</option>\n        </optgroup>\n      </select>\n    </div>\n    <div><label class="fl">本次滑雪目標 *</label><textarea v-model="f.goal" placeholder="例：學會基本剎車與轉彎…" class="fi" style="height:65px"></textarea></div>\n  </div>\n  <div class="card">\n    <div class="sl">日期與時段</div>\n    <div class="g">\n      <label class="fl">上課天數 *</label>\n      <div style="display:flex;align-items:center;gap:16px;margin-bottom:6px">\n        <button @click="ad(-1)" style="width:40px;height:40px;border-radius:10px;border:1.5px solid var(--bd);background:var(--cr);font-size:20px;color:var(--ik);cursor:pointer">-</button>\n        <span style="font-size:28px;font-style:italic;color:var(--ik);flex:1;text-align:center">{{ f.dy }}</span>\n        <button @click="ad(1)" style="width:40px;height:40px;border-radius:10px;border:1.5px solid var(--bd);background:var(--cr);font-size:20px;color:var(--ik);cursor:pointer">+</button>\n      </div>\n      <div class="sh" style="text-align:center">{{ f.dy }} 天課程</div>\n    </div>\n    <div v-for="d in f.dy" :key="d" class="db">\n      <div class="dt">DAY {{ d }}</div>\n      <div class="gs"><input v-model="f.sc[d-1].date" type="date" class="fi"></div>\n      <select v-model="f.sc[d-1].sess" class="fi">\n        <option value="" disabled>選擇時段</option>\n        <option value="full">全天班\u30009:30 - 15:30</option>\n        <option value="am">上午班\u30009:30 - 12:30</option>\n        <option value="pm">下午班\u300013:30 - 16:30</option>\n      </select>\n    </div>\n  </div>\n  <div class="card">\n    <div class="sl">付款方式</div>\n    <div class="pq">\n      <div class="pql">您是否具有台幣帳戶？</div>\n      <div class="pqo">\n        <button class="pqb" :class="{on:f.hasTwd===true}" @click="f.hasTwd=true;f.pay=\'\'">有台幣帳戶</button>\n        <button class="pqb" :class="{on:f.hasTwd===false}" @click="f.hasTwd=false;f.pay=\'\'">沒有台幣帳戶</button>\n      </div>\n    </div>\n    <div v-if="f.hasTwd===true">\n      <div v-for="o in poTwd" :key="o.v" class="po" @click="f.pay=o.v"><div class="cb" :class="{on:f.pay===o.v}"></div><div><div class="pn">{{ o.l }}</div><div class="pd">{{ o.d }}</div></div></div>\n    </div>\n    <div v-else-if="f.hasTwd===false">\n      <div v-for="o in poNoTwd" :key="o.v" class="po" @click="f.pay=o.v"><div class="cb" :class="{on:f.pay===o.v}"></div><div><div class="pn">{{ o.l }}</div><div class="pd">{{ o.d }}</div></div></div>\n    </div>\n    <div style="margin-top:12px"><label class="fl">優惠碼（選填）</label><input v-model="f.cp" type="text" placeholder="輸入優惠碼" class="fi"><div v-if="skd" class="ct">✓ {{ skd }}</div></div>\n  </div>\n  <div v-if="f.hc&&f.dy" class="pxb"><div><div class="pxl">預估總金額</div><div style="font-size:10px;color:var(--m2);margin-top:2px">{{ f.dy }}天 {{ f.hc }}人</div></div><div class="pxv">NT$ {{ skt.toLocaleString() }}</div></div>\n  <div class="card">\n    <div class="sl">其他（選填）</div>\n    <div class="g"><label class="fl">指定教練（請事先與官方 LINE 確認）</label><input v-model="f.coach" type="text" placeholder="教練名稱" class="fi"></div>\n    <div class="g"><label class="fl">推薦人</label><input v-model="f.ref" type="text" placeholder="推薦人姓名或 ID" class="fi"></div>\n    <div><label class="fl">備註</label><textarea v-model="f.nt" placeholder="其他需求或說明" class="fi" style="height:65px"></textarea></div>\n  </div>\n  <div v-if="se" class="er">{{ se }}</div>\n  <button class="bb" @click="$emit(\'update-ss\',1);$emit(\'update-se\',\'\')">← 上一步</button>\n  <button class="bp" @click="sn">下一步：學員資料</button>\n</div>\n<div v-if="ss===3" class="fa">\n  <div class="card">\n    <div class="sl">學員資料（投保用）</div>\n    <div class="nt"><div class="ntl">SNOW WAY 保險說明</div><p>已投保傷害保險及賠償責任保險。請每位學員分別填寫護照資料以利建檔。建議自行加保旅遊平安險。</p></div>\n    <div v-for="s in f.hc" :key="s" style="border:1.5px solid var(--bd);border-radius:11px;padding:13px;background:var(--cr);margin-bottom:9px">\n      <div class="dt">STUDENT {{ s }}</div>\n      <div class="gs"><label class="fl">護照中文姓名 *</label><input v-model="f.st[s-1].nc" type="text" placeholder="護照中文姓名" class="fi"></div>\n      <div class="gs"><label class="fl">護照英文姓名 *（需與護照相同）</label><input v-model="f.st[s-1].ne" type="text" placeholder="英文全名" class="fi"></div>\n      <div class="gs"><label class="fl">性別 *</label><select v-model="f.st[s-1].gd" class="fi"><option value="" disabled>請選擇</option><option value="M">男 / Male</option><option value="F">女 / Female</option></select></div>\n      <div><label class="fl">出生年月日 *</label><input v-model="f.st[s-1].dob" type="date" class="fi"></div>\n    </div>\n  </div>\n  <div v-if="se" class="er">{{ se }}</div>\n  <button class="bb" @click="$emit(\'update-ss\',2);$emit(\'update-se\',\'\')">← 上一步</button>\n  <button class="bp" @click="sn">下一步：確認送出</button>\n</div>\n<div v-if="ss===4" class="fa">\n  <div class="card">\n    <div class="sl">預約確認</div>\n    <div class="ci" style="margin-bottom:12px">\n      <div class="sr"><span class="sk">姓名</span><span class="sv">{{ f.name }}</span></div>\n      <div class="sr"><span class="sk">LINE ID</span><span class="sv">{{ f.lid }}</span></div>\n      <div class="sr"><span class="sk">人數</span><span class="sv">{{ f.hc }} 人</span></div>\n      <div class="sr"><span class="sk">板型</span><span class="sv">{{ f.bt===\'sb\'?\'單板\':\'雙板\' }}</span></div>\n      <div class="sr"><span class="sk">程度</span><span class="sv">{{ f.lv }}</span></div>\n      <div class="sr"><span class="sk">雪場</span><span class="sv">{{ rl(f.rs) }}</span></div>\n      <div v-for="d in f.dy" :key="d" class="sr"><span class="sk">第 {{ d }} 天</span><span class="sv">{{ f.sc[d-1].date }} {{ ssl(f.sc[d-1].sess) }}</span></div>\n      <div class="sr"><span class="sk">付款方式</span><span class="sv">{{ pl(f.pay) }}</span></div>\n      <div v-if="skd" class="sr"><span class="sk">優惠</span><span class="sv" style="color:var(--gd)">{{ skd }}</span></div>\n    </div>\n    <div class="ci">\n      <div class="sr"><span class="sk">課程總價</span><span class="sv" style="font-family:monospace">NT$ {{ skb.toLocaleString() }}</span></div>\n      <div v-if="skda>0" class="sr"><span class="sk">折扣優惠</span><span style="font-family:monospace;color:var(--gd);font-size:12px">- NT$ {{ skda.toLocaleString() }}</span></div>\n      <div class="sr"><span style="font-size:14px;font-weight:600;color:var(--ik)">應付總額</span><span style="font-family:monospace;font-size:14px;font-weight:600;color:var(--gd)">NT$ {{ skt.toLocaleString() }}</span></div>\n      <div class="sr"><span class="sk">應付訂金（{{ f.dy }}天x5,000）</span><span class="sv" style="font-family:monospace">NT$ {{ skdp.toLocaleString() }}</span></div>\n      <div class="sr"><span class="sk">應付尾款</span><span class="sv" style="font-family:monospace">NT$ {{ skbl.toLocaleString() }}</span></div>\n    </div>\n    <p style="font-size:9px;color:var(--m2);margin-top:7px">課程費用不包含雪票、裝備、保險等。</p>\n  </div>\n  <div v-if="se" class="er">{{ se }}</div>\n  <button class="bb" @click="$emit(\'update-ss\',3);$emit(\'update-se\',\'\')">← 上一步</button>\n  <button class="bp" :disabled="sub" @click="sbski">{{ sub?\'送出中…\':\'確認送出報名\' }}</button>\n  <p style="font-size:10px;color:var(--m2);text-align:center;margin-top:9px">送出後將自動寄送確認信至您的 Email</p>\n</div>\n</div>';
+const INN_TMPL = '\n<div>\n<div v-if="is2===1" class="fa">\n  <div class="card">\n    <div class="sl">條款確認</div>\n    <div class="nt" style="max-height:120px;overflow-y:auto">\n      <div class="ntl">預約與取消條款</div>\n      <p>· 46天前取消：訂金全額退還</p><p>· 31-45天內：訂金退20%</p><p>· 30天內：訂金不退還</p><p>· 更改日期：不收費</p>\n    </div>\n    <div class="cw" @click="g.t=!g.t"><div class="cb" :class="{on:g.t}"></div><span class="cl">我已閱讀並同意預約與取消條款 *</span></div>\n  </div>\n  <div class="card">\n    <div class="sl">聯絡人資料</div>\n    <div class="g"><label class="fl">姓名 *</label><input v-model="g.name" type="text" placeholder="姓名或暱稱" class="fi"></div>\n    <div class="g"><label class="fl">LINE ID *</label><input v-model="g.lid" type="text" placeholder="@yourlineid" class="fi"></div>\n    <div><label class="fl">Email *</label><input v-model="g.email" type="email" placeholder="確認信寄送至此" class="fi"></div>\n  </div>\n  <div class="card">\n    <div class="sl">優惠碼</div>\n    <label class="fl">如有優惠碼請先輸入，房型定價將自動更新</label>\n    <input v-model="g.cp" type="text" placeholder="輸入優惠碼（選填）" class="fi">\n    <div v-if="icl" class="ct">✓ {{ icl }}</div>\n  </div>\n  <div v-if="ie" class="er">{{ ie }}</div>\n  <button class="bp" @click="inn2">下一步</button>\n</div>\n<div v-if="is2===2" class="fa">\n  <div class="card">\n    <div class="sl">住宿資料</div>\n    <div class="g">\n      <label class="fl">入住人數 *</label>\n      <div class="pr"><button v-for="n in 8" :key="n" class="pp" :class="{on:g.hc===n}" @click="g.hc=n">{{ n }}</button></div>\n      <div v-if="g.hc" class="sh">已選：{{ g.hc }} 人</div>\n    </div>\n    <div class="g">\n      <label class="fl">房型 *</label>\n      <button v-for="r in irs" :key="r.v" class="rb" :class="{on:g.rt===r.v}" @click="g.rt=r.v">\n        <div><div class="rn">{{ r.name }}</div><div class="rnt">{{ r.note }}</div></div>\n        <div class="rp">NT$ {{ r.price.toLocaleString() }}<div class="rpp">/ 晚</div></div>\n      </button>\n    </div>\n    <div class="g"><label class="fl">入住日期 *</label><input v-model="g.ci" type="date" class="fi"></div>\n    <div class="g"><label class="fl">退房日期 *</label><input v-model="g.co" type="date" class="fi"></div>\n    <div v-if="inh>0&&g.rt" class="pxb"><div><div class="pxl">{{ inh }} 晚 x NT$ {{ irp.toLocaleString() }}</div><div style="font-size:10px;color:var(--m2);margin-top:2px">訂金 = 總價 50%</div></div><div class="pxv">NT$ {{ itl.toLocaleString() }}</div></div>\n  </div>\n  <div class="card">\n    <div class="sl">付款方式</div>\n    <div class="pq">\n      <div class="pql">您是否具有台幣帳戶？</div>\n      <div class="pqo">\n        <button class="pqb" :class="{on:g.hasTwd===true}" @click="g.hasTwd=true;g.pay=\'\'">有台幣帳戶</button>\n        <button class="pqb" :class="{on:g.hasTwd===false}" @click="g.hasTwd=false;g.pay=\'\'">沒有台幣帳戶</button>\n      </div>\n    </div>\n    <div v-if="g.hasTwd===true">\n      <div v-for="o in poTwd" :key="o.v" class="po" @click="g.pay=o.v"><div class="cb" :class="{on:g.pay===o.v}"></div><div><div class="pn">{{ o.l }}</div><div class="pd">{{ o.d }}</div></div></div>\n    </div>\n    <div v-else-if="g.hasTwd===false">\n      <div v-for="o in poNoTwd" :key="o.v" class="po" @click="g.pay=o.v"><div class="cb" :class="{on:g.pay===o.v}"></div><div><div class="pn">{{ o.l }}</div><div class="pd">{{ o.d }}</div></div></div>\n    </div>\n  </div>\n  <div class="card"><div class="sl">備註（選填）</div><textarea v-model="g.nt" placeholder="特殊需求或說明" class="fi" style="height:70px"></textarea></div>\n  <div v-if="ie" class="er">{{ ie }}</div>\n  <button class="bb" @click="$emit(\'update-is\',1);$emit(\'update-ie\',\'\')">← 上一步</button>\n  <button class="bp" @click="inn2">下一步：確認送出</button>\n</div>\n<div v-if="is2===3" class="fa">\n  <div class="card">\n    <div class="sl">預約確認</div>\n    <div class="ci" style="margin-bottom:12px">\n      <div class="sr"><span class="sk">姓名</span><span class="sv">{{ g.name }}</span></div>\n      <div class="sr"><span class="sk">LINE ID</span><span class="sv">{{ g.lid }}</span></div>\n      <div class="sr"><span class="sk">人數</span><span class="sv">{{ g.hc }} 人</span></div>\n      <div class="sr"><span class="sk">房型</span><span class="sv">{{ irn }}</span></div>\n      <div class="sr"><span class="sk">入住</span><span class="sv">{{ g.ci }}</span></div>\n      <div class="sr"><span class="sk">退房</span><span class="sv">{{ g.co }}</span></div>\n      <div class="sr"><span class="sk">晚數</span><span class="sv">{{ inh }} 晚</span></div>\n      <div class="sr"><span class="sk">付款方式</span><span class="sv">{{ pl(g.pay) }}</span></div>\n      <div v-if="icl" class="sr"><span class="sk">優惠碼</span><span class="sv" style="color:var(--gd)">{{ icl }}</span></div>\n    </div>\n    <div class="ci">\n      <div class="sr"><span class="sk">每晚房價</span><span class="sv" style="font-family:monospace">NT$ {{ irp.toLocaleString() }}</span></div>\n      <div class="sr"><span class="sk">晚數</span><span class="sv" style="font-family:monospace">{{ inh }} 晚</span></div>\n      <div class="sr"><span style="font-size:14px;font-weight:600;color:var(--ik)">總金額</span><span style="font-family:monospace;font-size:14px;font-weight:600;color:var(--gd)">NT$ {{ itl.toLocaleString() }}</span></div>\n      <div class="sr"><span class="sk">應付訂金（50%）</span><span class="sv" style="font-family:monospace">NT$ {{ idp.toLocaleString() }}</span></div>\n      <div class="sr"><span class="sk">應付尾款</span><span class="sv" style="font-family:monospace">NT$ {{ ibl.toLocaleString() }}</span></div>\n    </div>\n  </div>\n  <div v-if="ie" class="er">{{ ie }}</div>\n  <button class="bb" @click="$emit(\'update-is\',2);$emit(\'update-ie\',\'\')">← 上一步</button>\n  <button class="bp" :disabled="sub" @click="sbinn">{{ sub?\'送出中…\':\'確認送出預約\' }}</button>\n  <p style="font-size:10px;color:var(--m2);text-align:center;margin-top:9px">送出後將自動寄送確認信至您的 Email</p>\n</div>\n</div>';
 
-// 付款選項：有台幣 / 沒台幣
-const poTwd=[
-  {v:'twd',l:'台幣匯款',d:'匯款至台灣銀行帳號'},
-  {v:'jpy',l:'日幣匯款',d:'匯款至日本銀行帳號'},
-]
-const poNoTwd=[
-  {v:'jpy',l:'日幣匯款',d:'匯款至日本銀行帳號'},
-  {v:'cash',l:'現場現金（日幣）',d:'上課/入住當天以日幣現場支付'},
-]
+const {createApp, ref, reactive, computed, defineComponent} = Vue;
 
-const RESORT={zao:'山形＿藏王溫泉滑雪場',liza:'山形＿藏王 Liza World',yama_other:'山形＿其他',iwappara:'越後湯澤＿岩原',niigata_other:'越後湯澤＿其他'}
-const rl=v=>RESORT[v]||v
-const ssl=v=>({full:'全天班',am:'上午班',pm:'下午班'}[v]||v)
-const pl=v=>({twd:'台幣匯款',jpy:'日幣匯款',cash:'現場現金（日幣）'}[v]||v)
+const SkiForm = defineComponent({
+  props:['f','ss','se','cls','skd','skb','skt','skda','skdp','skbl','poTwd','poNoTwd','rl','ssl','pl','sn','sbski','sub','ad'],
+  emits:['update-ss','update-se'],
+  template: SKI_TMPL
+});
 
-const ms=()=>reactive({nc:'',ne:'',gd:'',dob:''})
-const mc=()=>reactive({date:'',sess:''})
-const f=reactive({t:false,p:false,name:'',lid:'',email:'',hc:1,bt:'',lv:'',rs:'',goal:'',dy:1,sc:Array.from({length:14},mc),hasTwd:null,pay:'',cp:'',coach:'',ref:'',nt:'',st:Array.from({length:6},ms)})
-const ad=d=>{f.dy=Math.max(1,Math.min(14,f.dy+d))}
+const InnForm = defineComponent({
+  props:['g','is2','ie','irs','irp','irn','inh','itl','idp','ibl','icl','poTwd','poNoTwd','pl','inn2','sbinn','sub'],
+  emits:['update-is','update-ie'],
+  template: INN_TMPL
+});
 
-const sbl=[{v:'Lv.0',s:'完全初學',d:'從未滑雪，不知道如何穿雪鞋、穿板，不會煞車或滑行。'},{v:'Lv.1',s:'初學',d:'稍微接觸過，會一點控制方向或煞車，但不太會轉彎。'},{v:'Lv.2',s:'初中級',d:'能在綠線安全滑行，能簡單分段轉彎，開始嘗試控制速度。'},{v:'Lv.3',s:'中級',d:'能在綠線自如滑行、連續轉彎，準備挑戰紅線與進階技巧。'},{v:'Lv.4',s:'中高級',d:'能順利滑紅線，想加強 carving 技術或挑戰地形變化。'},{v:'Lv.5',s:'高級',d:'對中級坡駕輕就熟，想挑戰野雪、非整地或地形 park。'},{v:'Lv.6',s:'專業',d:'能應對所有雪況與地形，追求極致技巧。'}]
-const skll=[{v:'Lv.0',s:'完全初學',d:'從未滑雪、不了解裝備、不會煞車、煞停。'},{v:'Lv.1',s:'初學',d:'可站立滑行，會煞停，但無法控制方向。'},{v:'Lv.2',s:'初中級',d:'能控制方向滑行、會八字轉彎但不穩。'},{v:'Lv.3',s:'中級',d:'能穩定轉彎、能在綠線自如滑行。'},{v:'Lv.4',s:'中高級',d:'熟悉綠線平行轉彎、開始挑戰紅線。'},{v:'Lv.5',s:'高級',d:'紅線滑行流暢、能掌握速度變化。'},{v:'Lv.6',s:'專業',d:'能自如滑行大部分場地、挑戰黑線。'}]
-const cls=computed(()=>f.bt==='sb'?sbl:skll)
+const app = createApp({
+  components: {'ski-form': SkiForm, 'inn-form': InnForm},
+  setup() {
+    const GAS_SKI = 'https://script.google.com/macros/s/AKfycby-VnvbcLtoXNpjEyrGp8n_orcR36La07UTvkKatPE0NOwIj2hwal_ZlKDMy_vbLHE/exec';
+    const GAS_INN = 'https://script.google.com/macros/s/AKfycbyPiJ3mED3zuLkIQtxawjn1XgR4SZ-zrT8MV-UFncDD7fW3RKBBCd1g94w7BGMQ6tU/exec';
+    const view = ref('home'), bk = ref(''), did = ref(''), sub = ref(false);
+    const ss = ref(1), is = ref(1), se = ref(''), ie = ref('');
+    const sl = ['條款與聯絡','課程配置','學員資料','確認送出'];
+    const il = ['條款與聯絡','住宿資料','確認送出'];
+    const poTwd = [{v:'twd',l:'台幣匯款',d:'匯款至台灣銀行帳號'},{v:'jpy',l:'日幣匯款',d:'匯款至日本銀行帳號'}];
+    const poNoTwd = [{v:'jpy',l:'日幣匯款',d:'匯款至日本銀行帳號'},{v:'cash',l:'現場現金（日幣）',d:'上課/入住當天以日幣現場支付'}];
+    const RESORT = {zao:'山形＿藏王溫泉滑雪場',liza:'山形＿藏王 Liza World',yama_other:'山形＿其他',iwappara:'越後湯澤＿岩原',niigata_other:'越後湯澤＿其他'};
+    const rl = v => RESORT[v] || v;
+    const ssl = v => ({full:'全天班',am:'上午班',pm:'下午班'}[v] || v);
+    const pl = v => ({twd:'台幣匯款',jpy:'日幣匯款',cash:'現場現金（日幣）'}[v] || v);
+    const ms = () => reactive({nc:'',ne:'',gd:'',dob:''});
+    const mc = () => reactive({date:'',sess:''});
+    const f = reactive({t:false,p:false,name:'',lid:'',email:'',hc:1,bt:'',lv:'',rs:'',goal:'',dy:1,sc:Array.from({length:14},mc),hasTwd:null,pay:'',cp:'',coach:'',ref:'',nt:'',st:Array.from({length:6},ms)});
+    const ad = d => { f.dy = Math.max(1, Math.min(14, f.dy + d)); };
+    const sbl = [{v:'Lv.0',s:'完全初學',d:'從未滑雪，不知道如何穿雪鞋、穿板，不會煞車或滑行。'},{v:'Lv.1',s:'初學',d:'稍微接觸過，會一點控制方向或煞車，但不太會轉彎。'},{v:'Lv.2',s:'初中級',d:'能在綠線安全滑行，能簡單分段轉彎，開始嘗試控制速度。'},{v:'Lv.3',s:'中級',d:'能在綠線自如滑行、連續轉彎，準備挑戰紅線與進階技巧。'},{v:'Lv.4',s:'中高級',d:'能順利滑紅線，想加強carving技術或挑戰地形變化。'},{v:'Lv.5',s:'高級',d:'對中級坡駕輕就熟，想挑戰野雪、非整地或地形park。'},{v:'Lv.6',s:'專業',d:'能應對所有雪況與地形，追求極致技巧。'}];
+    const skll = [{v:'Lv.0',s:'完全初學',d:'從未滑雪、不了解裝備、不會煞車、煞停。'},{v:'Lv.1',s:'初學',d:'可站立滑行，會煞停，但無法控制方向。'},{v:'Lv.2',s:'初中級',d:'能控制方向滑行、會八字轉彎但不穩。'},{v:'Lv.3',s:'中級',d:'能穩定轉彎、能在綠線自如滑行。'},{v:'Lv.4',s:'中高級',d:'熟悉綠線平行轉彎、開始挑戰紅線。'},{v:'Lv.5',s:'高級',d:'紅線滑行流暢、能掌握速度變化。'},{v:'Lv.6',s:'專業',d:'能自如滑行大部分場地、挑戰黑線。'}];
+    const cls = computed(() => f.bt === 'sb' ? sbl : skll);
+    const SKP = {full:[15000,16000,17000,18000,19000,20000],am:[10000,11000,12000,13000,14000,15000],pm:[10000,11000,12000,13000,14000,15000]};
+    const SKCP = {'snowway080':0.80,'snowway085':0.85,'snowway090':0.90,'snowway095':0.95};
+    const skcr = computed(() => SKCP[(f.cp||'').toLowerCase().trim()] || 1);
+    const skd = computed(() => { const r = skcr.value; if(r===1) return null; return {0.80:'八折(80%)',0.85:'八五折(85%)',0.90:'九折(90%)',0.95:'九五折(95%)'}[r]; });
+    const skb = computed(() => { const i = Math.min(Math.max(f.hc,1),6)-1; let t=0; for(let d=0;d<f.dy;d++){const s=f.sc[d]?.sess||'full';t+=(SKP[s]||SKP.full)[i];} return t; });
+    const skt = computed(() => Math.round(skb.value * skcr.value));
+    const skda = computed(() => skb.value - skt.value);
+    const skdp = computed(() => 5000 * f.dy);
+    const skbl = computed(() => Math.max(skt.value - skdp.value, 0));
+    const sn = () => {
+      se.value = '';
+      if(ss.value===1){if(!f.t){se.value='請先確認並同意取消條款';return;}if(!f.name||!f.lid||!f.email){se.value='請填寫所有必填聯絡資料';return;}ss.value=2;}
+      else if(ss.value===2){if(!f.bt||!f.lv){se.value='請選擇板型與學員程度';return;}if(!f.rs){se.value='請選擇上課雪場';return;}if(!f.goal){se.value='請填寫本次滑雪目標';return;}if(f.hasTwd===null){se.value='請選擇是否具有台幣帳戶';return;}if(!f.pay){se.value='請選擇付款方式';return;}for(let i=0;i<f.dy;i++){if(!f.sc[i].date||!f.sc[i].sess){se.value='請填寫第'+(i+1)+'天的日期與時段';return;}}ss.value=3;}
+      else if(ss.value===3){for(let i=0;i<f.hc;i++){const s=f.st[i];if(!s.nc||!s.ne||!s.gd||!s.dob){se.value='請完整填寫學員'+(i+1)+'的保險資料';return;}}ss.value=4;}
+      window.scrollTo(0,0);
+    };
+    const sbski = async () => {
+      se.value=''; sub.value=true;
+      try{const res=await fetch(GAS_SKI,{method:'POST',body:JSON.stringify({name:f.name,lineId:f.lid,email:f.email,headcount:f.hc,boardType:f.bt==='sb'?'snowboard':'ski',level:f.lv,resort:rl(f.rs),goal:f.goal,days:f.dy,sched:f.sc.slice(0,f.dy),payment:f.pay,coupon:f.cp,coach:f.coach,referrer:f.ref,notes:f.nt,agreeTerms:f.t,agreePhoto:f.p,students:f.st.slice(0,f.hc)})});const d=await res.json();if(d.success){did.value=d.orderNumber;bk.value='ski';view.value='done';}else{se.value=d.error||'送出失敗，請聯繫官方 LINE';}}
+      catch{se.value='網路錯誤，請稍後再試';}
+      finally{sub.value=false;}
+    };
+    const g = reactive({t:false,name:'',lid:'',email:'',hc:2,rt:'',ci:'',co:'',hasTwd:null,pay:'',cp:'',nt:''});
+    const INP = {'asayuki000':{double:2600,triple:3600,single:1990,label:'早雪優惠方案'},'asayuki888':{double:2800,triple:3800,single:1990,label:'早鳥優惠方案'},'':{double:3200,triple:4200,single:1990,label:null}};
+    const ick = computed(() => (g.cp||'').toLowerCase().trim());
+    const ipr = computed(() => INP[ick.value] || INP['']);
+    const icl = computed(() => ipr.value.label);
+    const irs = computed(() => [{v:'double',name:'雙人房',note:'適合 2 人入住',price:ipr.value.double},{v:'triple',name:'三人房',note:'適合 3 人入住',price:ipr.value.triple},{v:'single',name:'單人床位',note:'單一床位計價',price:ipr.value.single}]);
+    const irp = computed(() => { const r=irs.value.find(r=>r.v===g.rt); return r?r.price:0; });
+    const irn = computed(() => { const r=irs.value.find(r=>r.v===g.rt); return r?r.name:''; });
+    const inh = computed(() => { if(!g.ci||!g.co)return 0; const d=Math.round((new Date(g.co)-new Date(g.ci))/86400000); return d>0?d:0; });
+    const itl = computed(() => inh.value * irp.value);
+    const idp = computed(() => Math.round(itl.value * 0.5));
+    const ibl = computed(() => itl.value - idp.value);
+    const inn2 = () => {
+      ie.value='';
+      if(is.value===1){if(!g.t){ie.value='請先確認並同意條款';return;}if(!g.name||!g.lid||!g.email){ie.value='請填寫所有必填聯絡資料';return;}is.value=2;}
+      else if(is.value===2){if(!g.rt){ie.value='請選擇房型';return;}if(!g.ci||!g.co){ie.value='請選擇入住與退房日期';return;}if(inh.value<=0){ie.value='退房日期必須晚於入住日期';return;}if(g.hasTwd===null){ie.value='請選擇是否具有台幣帳戶';return;}if(!g.pay){ie.value='請選擇付款方式';return;}is.value=3;}
+      window.scrollTo(0,0);
+    };
+    const sbinn = async () => {
+      ie.value=''; sub.value=true;
+      try{const res=await fetch(GAS_INN,{method:'POST',body:JSON.stringify({name:g.name,lineId:g.lid,email:g.email,headcount:g.hc,roomType:g.rt,checkIn:g.ci,checkOut:g.co,payment:g.pay,coupon:g.cp,notes:g.nt})});const d=await res.json();if(d.success){did.value=d.orderNumber;bk.value='inn';view.value='done';}else{ie.value=d.error||'送出失敗，請聯繫官方 LINE';}}
+      catch{ie.value='網路錯誤，請稍後再試';}
+      finally{sub.value=false;}
+    };
+    const go = t => { bk.value=t; view.value=t; };
+    const rst = () => { view.value='home'; ss.value=1; is.value=1; };
+    return {view,bk,did,sub,ss,is,se,ie,sl,il,poTwd,poNoTwd,rl,ssl,pl,f,ad,cls,skd,skb,skt,skda,skdp,skbl,sn,sbski,g,irs,irp,irn,inh,itl,idp,ibl,icl,inn2,sbinn,go,rst};
+  }
+});
+app.mount('#app');
 
-const SKP={full:[15000,16000,17000,18000,19000,20000],am:[10000,11000,12000,13000,14000,15000],pm:[10000,11000,12000,13000,14000,15000]}
-const SKCP={'snowway080':0.80,'snowway085':0.85,'snowway090':0.90,'snowway095':0.95}
-const skcr=computed(()=>SKCP[(f.cp||'').toLowerCase().trim()]||1)
-const skd=computed(()=>{const r=skcr.value;if(r===1)return null;return{0.80:'八折(80%)',0.85:'八五折(85%)',0.90:'九折(90%)',0.95:'九五折(95%)'}[r]})
-const skb=computed(()=>{const i=Math.min(Math.max(f.hc,1),6)-1;let t=0;for(let d=0;d<f.dy;d++){const s=f.sc[d]?.sess||'full';t+=(SKP[s]||SKP.full)[i]}return t})
-const skt=computed(()=>Math.round(skb.value*skcr.value))
-const skda=computed(()=>skb.value-skt.value)
-const skdp=computed(()=>5000*f.dy)
-const skbl=computed(()=>Math.max(skt.value-skdp.value,0))
-
-const sn=()=>{se.value='';if(ss.value===1){if(!f.t){se.value='請先確認並同意取消條款';return}if(!f.name||!f.lid||!f.email){se.value='請填寫所有必填聯絡資料';return}ss.value=2}else if(ss.value===2){if(!f.bt||!f.lv){se.value='請選擇板型與學員程度';return}if(!f.rs){se.value='請選擇上課雪場';return}if(!f.goal){se.value='請填寫本次滑雪目標';return}if(f.hasTwd===null){se.value='請選擇是否具有台幣帳戶';return}if(!f.pay){se.value='請選擇付款方式';return}for(let i=0;i<f.dy;i++){if(!f.sc[i].date||!f.sc[i].sess){se.value='請填寫第'+(i+1)+'天的日期與時段';return}}ss.value=3}else if(ss.value===3){for(let i=0;i<f.hc;i++){const s=f.st[i];if(!s.nc||!s.ne||!s.gd||!s.dob){se.value='請完整填寫學員'+(i+1)+'的保險資料';return}}ss.value=4}window.scrollTo(0,0)}
-
-const sbski=async()=>{se.value='';sub.value=true;try{const res=await fetch(GAS_SKI,{method:'POST',body:JSON.stringify({name:f.name,lineId:f.lid,email:f.email,headcount:f.hc,boardType:f.bt==='sb'?'snowboard':'ski',level:f.lv,resort:rl(f.rs),goal:f.goal,days:f.dy,sched:f.sc.slice(0,f.dy),payment:f.pay,coupon:f.cp,coach:f.coach,referrer:f.ref,notes:f.nt,agreeTerms:f.t,agreePhoto:f.p,students:f.st.slice(0,f.hc)})});const d=await res.json();if(d.success){did.value=d.orderNumber;bk.value='ski';view.value='done'}else{se.value=d.error||'送出失敗，請聯繫官方 LINE'}}catch{se.value='網路錯誤，請稍後再試'}finally{sub.value=false}}
-
-const g=reactive({t:false,name:'',lid:'',email:'',hc:2,rt:'',ci:'',co:'',hasTwd:null,pay:'',cp:'',nt:''})
-const INP={'asayuki000':{double:2600,triple:3600,single:1990,label:'早雪優惠方案'},'asayuki888':{double:2800,triple:3800,single:1990,label:'早鳥優惠方案'},'':{double:3200,triple:4200,single:1990,label:null}}
-const ick=computed(()=>(g.cp||'').toLowerCase().trim())
-const ipr=computed(()=>INP[ick.value]||INP[''])
-const icl=computed(()=>ipr.value.label)
-const irs=computed(()=>[{v:'double',name:'雙人房',note:'適合 2 人入住',price:ipr.value.double},{v:'triple',name:'三人房',note:'適合 3 人入住',price:ipr.value.triple},{v:'single',name:'單人床位',note:'單一床位計價',price:ipr.value.single}])
-const irp=computed(()=>{const r=irs.value.find(r=>r.v===g.rt);return r?r.price:0})
-const irn=computed(()=>{const r=irs.value.find(r=>r.v===g.rt);return r?r.name:''})
-const inh=computed(()=>{if(!g.ci||!g.co)return 0;const d=Math.round((new Date(g.co)-new Date(g.ci))/86400000);return d>0?d:0})
-const itl=computed(()=>inh.value*irp.value)
-const idp=computed(()=>Math.round(itl.value*.5))
-const ibl=computed(()=>itl.value-idp.value)
-
-const inn=()=>{ie.value='';if(is.value===1){if(!g.t){ie.value='請先確認並同意條款';return}if(!g.name||!g.lid||!g.email){ie.value='請填寫所有必填聯絡資料';return}is.value=2}else if(is.value===2){if(!g.rt){ie.value='請選擇房型';return}if(!g.ci||!g.co){ie.value='請選擇入住與退房日期';return}if(inh.value<=0){ie.value='退房日期必須晚於入住日期';return}if(g.hasTwd===null){ie.value='請選擇是否具有台幣帳戶';return}if(!g.pay){ie.value='請選擇付款方式';return}is.value=3}window.scrollTo(0,0)}
-
-const sbinn=async()=>{ie.value='';sub.value=true;try{const res=await fetch(GAS_INN,{method:'POST',body:JSON.stringify({name:g.name,lineId:g.lid,email:g.email,headcount:g.hc,roomType:g.rt,checkIn:g.ci,checkOut:g.co,payment:g.pay,coupon:g.cp,notes:g.nt})});const d=await res.json();if(d.success){did.value=d.orderNumber;bk.value='inn';view.value='done'}else{ie.value=d.error||'送出失敗，請聯繫官方 LINE'}}catch{ie.value='網路錯誤，請稍後再試'}finally{sub.value=false}}
-
-const go=t=>{bk.value=t;view.value=t}
-const rst=()=>{view.value='home';ss.value=1;is.value=1}
-return{view,bk,did,sub,ss,is,se,ie,sl,il,poTwd,poNoTwd,rl,ssl,pl,f,ad,cls,skd,skb,skt,skda,skdp,skbl,sn,sbski,g,irs,irp,irn,inh,itl,idp,ibl,icl,inn,sbinn,go,rst}
-}}).mount('#bapp')
 </script>
+</body>
+</html>
