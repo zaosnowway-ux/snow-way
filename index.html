@@ -216,7 +216,7 @@ const app = createApp({
       finally{sub.value=false;}
     };
     const g = reactive({t:false,name:'',lid:'',email:'',hc:0,nd:0,nt2:0,ns:0,ci:'',co:'',hasTwd:null,pay:'',cp:'',nt:''});
-    const INP = {'asayuki000':{double:2600,triple:3600,single:1990,label:'早雪優惠方案'},'asayuki888':{double:2800,triple:3800,single:1990,label:'早鳥優惠方案'},'':{double:3200,triple:4200,single:1990,label:null}};
+    const INP = {'asayuki000':{double:2600,triple:3600,single:1990,label:'早鳥優惠方案'},'asayuki888':{double:2800,triple:3800,single:1990,label:'朝雪優惠方案'},'anna2627':{double:3040,triple:3990,single:1990,label:'anna 95折優惠方案'},'':{double:3200,triple:4200,single:1990,label:null}};
     const ick = computed(() => (g.cp||'').toLowerCase().trim());
     const ipr = computed(() => INP[ick.value] || INP['']);
     const icl = computed(() => ipr.value.label);
