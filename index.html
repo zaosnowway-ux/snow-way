@@ -174,7 +174,7 @@ const InnForm = defineComponent({
 const app = createApp({
   components: {'ski-form': SkiForm, 'inn-form': InnForm},
   setup() {
-    const GAS_SKI = 'https://script.google.com/macros/s/AKfycbya08PqQ3TRr3t0jKz0ACZzUe9s-IHylNB2VmctY6V3mYtDxEZiTjDi-dUMG_YIRIc/exec';
+    const GAS_SKI = 'https://script.google.com/macros/s/AKfycbxNP7RDyzzDdLGxhWiO2AwAnNq4wMV2z8Qb9jRCurFxN1rNd9djSBxbBEaGhUWfj7w/exec';
     const GAS_INN = 'https://script.google.com/macros/s/AKfycbxVVu7xdgjQk9FHC9LBnmBakfZdo64xB9C4RDtXaTPgNXWtQz9H4xdGlBViD3AARV8/exec';
     const view = ref('home'), bk = ref(''), did = ref(''), sub = ref(false);
     const ss = ref(1), is = ref(1), se = ref(''), ie = ref('');
@@ -194,7 +194,7 @@ const app = createApp({
     const skll = [{v:'Lv.0',s:'完全初學',d:'從未滑雪、不了解裝備、不會煞車、煞停。'},{v:'Lv.1',s:'初學',d:'可站立滑行，會煞停，但無法控制方向。'},{v:'Lv.2',s:'初中級',d:'能控制方向滑行、會八字轉彎但不穩。'},{v:'Lv.3',s:'中級',d:'能穩定轉彎、能在綠線自如滑行。'},{v:'Lv.4',s:'中高級',d:'熟悉綠線平行轉彎、開始挑戰紅線。'},{v:'Lv.5',s:'高級',d:'紅線滑行流暢、能掌握速度變化。'},{v:'Lv.6',s:'專業',d:'能自如滑行大部分場地、挑戰黑線。'}];
     const cls = computed(() => f.bt === 'sb' ? sbl : skll);
     const SKP = {full:[15000,16000,17000,18000,19000,20000],am:[10000,11000,12000,13000,14000,15000],pm:[10000,11000,12000,13000,14000,15000]};
-    const SKCP = {'snowway080':0.80,'snowway085':0.85,'snowway090':0.90,'snowway095':0.95,'polarbear95':0.95,'polarbear90':0.90};
+    const SKCP = {'snowway080':0.80,'snowway082':0.82,'snowway085':0.85,'snowway090':0.90,'snowway095':0.95,'polarbear95':0.95,'polarbear90':0.90};
     const skcr = computed(() => SKCP[(f.cp||'').toLowerCase().trim()] || 1);
     const skd = computed(() => { const r = skcr.value; if(r===1) return null; return {0.80:'八折(80%)',0.85:'八五折(85%)',0.90:'九折(90%)',0.95:'九五折(95%)'}[r]; });
     const skb = computed(() => { const i = Math.min(Math.max(f.hc,1),6)-1; let t=0; for(let d=0;d<f.dy;d++){const s=f.sc[d]?.sess||'full';t+=(SKP[s]||SKP.full)[i];} return t; });
