@@ -180,7 +180,7 @@ const CHAPTERS = [
     qs:[
       {id:'region', q:'你已經決定要去哪裡滑雪了嗎？', sub:'SNOW WAY 在新潟「越後湯澤」跟山形「藏王」都有教練',
         opts:[
-          {v:'yuzawa',e:'🚄',t:'越後湯澤',s:'離東京最近',tip:'「湯澤」其實是一整個區域，裡面有岩原、神立、中里、神樂、苗場等好幾個雪場，車站有免費接駁巴士到各雪場！'},
+          {v:'yuzawa',e:'🚄',t:'越後湯澤',s:'離東京最近',tip:'「湯澤」其實是一整個區域，裡面有岩原、中里、神立、苗場等好幾個雪場，車站有免費接駁巴士到各雪場！'},
           {v:'zao',e:'🌲',t:'山形藏王',s:'樹冰、溫泉街',tip:'藏王其實不只一個雪場！除了有名的「藏王溫泉滑雪場」，旁邊還有人超少、超適合新手的「藏王 Liza world」，山頂一樣看得到樹冰。'},
           {v:'unsure',e:'🤔',t:'還沒決定',s:'幫我推薦'}
         ]},
@@ -320,7 +320,7 @@ const CHAPTERS = [
         ]},
       {id:'dayType', q:'想上全天還是半天？',
         opts:[
-          {v:'full',e:'☀️',t:'全天',s:'5 小時＋休息 1 小時｜有九折',tip:'第一次滑雪小編推薦第一天上全天！半天常常還沒上雪道就結束了，隔天又要重新適應。'},
+          {v:'full',e:'☀️',t:'全天',s:'5 小時＋休息 1 小時｜加入 LINE 社群享九折',tip:'第一次滑雪小編推薦第一天上全天！半天常常還沒上雪道就結束了，隔天又要重新適應。'},
           {v:'half',e:'🌤️',t:'半天',s:'3 小時｜一般沒有折扣'}
         ]}
     ]
@@ -336,6 +336,8 @@ const TOUR = 24500;          // 藏王包團 5 天 4 夜（目前優惠均一價
 const JPY = 0.21;            // 日圓→台幣 估算匯率
 const LINE_ID = '@575njlnj';
 const BOOK_URL = 'https://zaosnowway-ux.github.io/snow-way/';
+// 加入社群享全天課九折（限藏王、岩原、中里、神立）
+const GROUP_URL = 'https://line.me/ti/g2/SdZ0eIARsN1HKUfEWYccxJKdbju_L9WtNxrAGg?utm_source=invitation&utm_medium=link_copy&utm_campaign=default';
 
 /* ============================================================
    狀態（存在瀏覽器，重新整理不會不見）
@@ -544,12 +546,12 @@ const isBeginner = ()=>!A().exp || A().exp==='0' || A().lv==='a';
 function resortPick(r){
   const a = A();
   if(r==='yuzawa'){
-    if(a.month==='12a') return {n:'神樂滑雪場', why:'12 月中前湯澤只有神樂有開。從湯澤車站搭巴士上去，雪具建議直接在雪場租。'};
-    if(isBeginner()) return {n:'岩原滑雪場', why:'湯澤對新手最友善的雪場：坡度平緩、有魔毯（輸送帶），練習時不用一直爬坡。'+(a.kids==='small'?'有小朋友的話，湯澤中里也有魔毯，很推薦。':'')};
-    return {n:'神立・神樂・苗場', why:'已經會滑了，可以挑戰地形比較多的雪場！神立離車站最近、地形豐富；神樂雪季長、雪質好。'};
+    if(a.month==='12a') return {n:'神樂滑雪場', disc:false, why:'12 月中前湯澤只有神樂有開。從湯澤車站搭巴士上去，雪具建議直接在雪場租。12/20 左右岩原、中里、神立開了之後，就推薦去那邊！'};
+    if(isBeginner()) return {n:'岩原滑雪場・湯澤中里', disc:true, why:'湯澤對新手最友善的兩個雪場：坡度平緩、都有魔毯（輸送帶），練習時不用一直爬坡。岩原雪道寬廣；中里適合住天使格蘭的家庭。'};
+    return {n:'神立・岩原・中里', disc:true, why:'已經會滑的話推薦神立：離車站最近、地形豐富。想換換口味也可以去苗場，雪場大、住苗場王子飯店很方便（苗場不適用九折優惠）。'};
   }
-  if(isBeginner()) return {n:'藏王 Liza world', why:'初級道寬又平緩、人超少不怕撞人，雪票只要約 ¥4,500（藏王溫泉約 ¥8,000），吊椅還會直接穿過樹冰林！很多學員是在這裡上課，最後一天再去藏王溫泉觀光。'};
-  return {n:'藏王溫泉滑雪場', why:'已經會滑的話，就去挑戰大家都在拍的樹冰路線！從山頂往下要經過一段很窄的紅線，滑下去就能穿過樹冰群。'};
+  if(isBeginner()) return {n:'藏王 Liza world', disc:true, why:'初級道寬又平緩、人超少不怕撞人，雪票只要約 ¥4,500（藏王溫泉約 ¥8,000），吊椅還會直接穿過樹冰林！很多學員是在這裡上課，最後一天再去藏王溫泉觀光。'};
+  return {n:'藏王溫泉滑雪場', disc:true, why:'已經會滑的話，就去挑戰大家都在拍的樹冰路線！從山頂往下要經過一段很窄的紅線，滑下去就能穿過樹冰群。'};
 }
 
 /* 教練課分組：超過 6 人平均分組 */
@@ -766,7 +768,12 @@ function secPrice(r){
   const people = +a.people||1, ldays = +a.lessonDays||1, half = a.dayType==='half';
   const g = groups(people);
   const base = g.reduce((s,n)=>s+(half?HALF[n]:FULL[n]),0) * ldays;
-  const lesson = half ? base : Math.round(base*0.9);
+  // 九折只限全天課，且雪場在藏王、岩原、中里、神立（還沒選地點就先以可折扣估算）
+  const discOk = !r || resortPick(r).disc;
+  const lesson = (!half && discOk) ? Math.round(base*0.9) : base;
+  const lessonNote = half ? '半天一般沒有折扣'
+    : discOk ? `加入 <a href="${GROUP_URL}" target="_blank" rel="noopener">LINE 社群</a>享全天課九折`
+    : '神樂、苗場等雪場不適用九折（九折限藏王、岩原、中里、神立）';
   const tripDays = Math.max(ldays, +a.days||ldays);
   const have = a.have||[];
   // 雪具（日圓/人/天）：板＋鞋 ¥4,500、雪衣褲 ¥4,000、安全帽 ¥1,000
@@ -786,7 +793,7 @@ function secPrice(r){
     <div class="disc">⚠️ 以下為「推薦方案」與「預估價格」，可能跟原本預期的不一樣。實際金額會依日期、人數、匯率與當期優惠調整，請以小編的正式報價為準。</div>
     <table class="price">
       <tr><td>教練課｜${g.map(n=>'1 對 '+n).join('＋')}・${half?'半天':'全天'} × ${ldays} 天
-        <small>${half?'半天一般沒有折扣':'全天課九折優惠（填優惠碼 snowway090）'}｜整組總額，一人約 ${fmt(perPerson)}</small></td><td>${fmt(lesson)}</td></tr>
+        <small>${lessonNote}｜整組總額，一人約 ${fmt(perPerson)}</small></td><td>${fmt(lesson)}</td></tr>
       <tr><td>雪具租借｜每人每天
         <small>${gear?'板＋鞋'+(have.includes('wear')?'':'＋雪衣褲')+(have.includes('helmet')?'':'＋安全帽')+'，依店家不同':'你的裝備都有了！'}</small></td><td>${gear?'約 '+fmt(gear):'—'}</td></tr>
       <tr><td>雪票｜每人每天
@@ -829,6 +836,9 @@ function secContact(r){
     <div class="disc" style="text-align:left">📌 以上為參考用結果。如有任何問題及疑慮，可以直接詢問客服，真人小編會依照您的情況回覆！</div>
     <p style="margin-bottom:14px">把你的答案直接傳給小編，<br>幫你查教練空檔、算正式報價！</p>
     <a class="btn btn-ln" href="${lineUrl}" target="_blank" rel="noopener">用 LINE 傳給小編</a>
+    <div class="gap"></div>
+    <a class="btn btn-ol" href="${GROUP_URL}" target="_blank" rel="noopener">🎁 加入 LINE 社群，全天課享九折</a>
+    <p class="note" style="margin-top:6px">九折限藏王、岩原、中里、神立的全天課</p>
     <div class="gap"></div>
     <button class="btn btn-ol" onclick="copyMsg()">複製我的答案</button>
     <div class="gap"></div>
