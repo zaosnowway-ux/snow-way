@@ -173,6 +173,16 @@ table.price tr.total td{border-bottom:none;border-top:2px solid var(--ik);font-s
 .gloss{display:grid;gap:8px;margin-top:6px}
 .gloss div{background:var(--cr);border-radius:10px;padding:9px 12px;font-size:13.5px}
 .gloss b{color:var(--gd)}
+details.more{border:1px solid var(--ln);border-radius:10px;margin:10px 0;background:var(--card)}
+details.more summary{cursor:pointer;padding:11px 14px;font-size:14px;font-weight:500;color:var(--gd);list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::after{content:"＋";font-size:16px}
+details.more[open] summary::after{content:"－"}
+details.more .in{padding:0 14px 12px;font-size:13.5px}
+details.more .in h4{font-size:13.5px;margin:10px 0 4px;color:var(--ik)}
+details.more .in ol,details.more .in ul{padding-left:20px}
+details.more .in li{font-size:13.5px;margin-bottom:5px}
+details.more .in li small{color:var(--mu)}
 .foot{text-align:center;font-size:12px;color:var(--mu);margin-top:22px}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ik);color:#fff;padding:10px 18px;border-radius:30px;font-size:14px;z-index:40;animation:fade .2s}
 </style>
@@ -759,8 +769,56 @@ function secGo(r){
   return `<div class="sec"><h2>✈️ 怎麼去</h2>
     <ul class="route">${steps.map(s=>`<li><b>${s[0]}</b><small>${s[1]}</small></li>`).join('')}</ul>
     ${notes.map(n=>`<div class="callout ${n.startsWith('⚠️')?'warn':''}">${n}</div>`).join('')}
+    ${a.arrive!=='daytrip' ? lodgingHtml(r, a.stay==='none') : ''}
     <div class="callout gd">💴 滑雪的地方幾乎都是鄉下，很多餐廳只收現金，一定要帶日幣！巴士可以用現金或 Suica。</div>
   </div>`;
+}
+
+/* 住宿推薦清單（點開才展開） */
+function lodgingHtml(r, open){
+  const li = x=>`<li><b>${x[0]}</b><br><small>${x[1]}</small></li>`;
+  if(r==='yuzawa'){
+    const A1 = [
+      ['エンゼルリゾート湯沢（Hotel Angel）','超推！岩原山腳入口，走路就到岩原；有車站接駁、隔壁有全家跟中文雪具店，預算優先首選'],
+      ['湯澤酒店（Hotel Yuzawa Denkiya）','昭和風情，岩原附近高 CP 值，有到岩原跟車站的接駁車'],
+      ['湯澤東映飯店（Yuzawa Toei Hotel）','離車站比較近，有往返車站的接駁車'],
+      ['湯澤中里天使格蘭（Angel Grandia）','適合家庭、設施齊全，有車站接駁，走一點點就到湯澤中里滑雪場'],
+      ['Yuzawa House／Yuzawa House 2','兩個館，車站走路會到，價格划算'],
+      ['越後之御宿 Inamoto','離車站及巴士轉運站極近'],
+      ['湯澤 Grand Hotel（湯澤大酒店）','車站步行即達，設施與服務完善'],
+      ['Yuzawa Ski House','樓下就是租賃店，在車站附近超方便'],
+      ['岩原滑雪度假飯店（Hotel Iwappara）','岩原滑雪場直達，經濟實惠'],
+      ['宿 SHIRO SHIRO','台灣人經營，跟車站青達雪具合作，就在岩原山腳入口旁'],
+      ['石打 base','有車站及雪場接送，飯店後面有小編覺得湯澤最棒的湯屋']
+    ];
+    const A2 = [
+      ['湯煙之宿 雪之花','共立集團頂規，私人湯屋無限次'],
+      ['越後湯澤 旅籠井仙（HATAGO Isen）','車站旁的設計名宿，質感極高'],
+      ['松泉閣花月','頂級榻榻米體驗，懷石料理驚豔'],
+      ['雙葉酒店（Hotel Futaba）','20 種溫泉池，頂級和牛'],
+      ['雪國之宿 高半','川端康成文學遺產，頂級源泉掛流'],
+      ['溫泉之宿 花水木','岩原區的精緻旅館，環境靜謐'],
+      ['櫻花亭別館','高級套房，適合重視隱私'],
+      ['湯澤麗晶飯店（Yuzawa Regent）','舒適空間，服務精緻'],
+      ['湯澤溫泉 山之音','安靜度假的頂級選擇'],
+      ['NASPA 新大谷','飯店頂尖、有私人雪場（⚠️ 這裡的雪場外部學校不能上課）']
+    ];
+    return `<details class="more" ${open?'open':''}><summary>🏨 湯澤住宿推薦清單</summary><div class="in">
+      <p>推薦住「車站附近」或「岩原山腳」，生活機能好、接駁方便。房價大多浮動，先挑喜歡的再到 Agoda／Booking 搜尋～</p>
+      <h4>💰 平價・高 CP 值</h4><ol>${A1.map(li).join('')}</ol>
+      <h4>✨ 豪華・頂級體驗</h4><ol>${A2.map(li).join('')}</ol>
+    </div></details>`;
+  }
+  const Z = [
+    ['中央口區域','有山上唯一的便利商店，去雪場不用爬坡，最推新手',[['Hotel Lucent Takamiya',''],['Pension Bokunouchi',''],['しばママのお宿 ShibaMama’s Casual hotel','']]],
+    ['上之台區','有適合新手的雪道，但每天出門要先爬一段很累的上坡；台灣人很集中，人多到新手不好放心滑',[['高宮哈蒙德酒店','好住，自家就有溫泉'],['Zao Sun Valley Hotel','在雪道前，第一天爬上去之後就不用再爬']]],
+    ['山麓站區域','搭觀光纜車上山的位置',[['藏王國際飯店','貴了一點']]]
+  ];
+  return `<details class="more" ${open?'open':''}><summary>🏨 藏王住宿推薦清單</summary><div class="in">
+    ${Z.map(z=>`<h4>📍 ${z[0]}</h4><p style="color:var(--mu)">${z[1]}</p><ol>${z[2].map(x=>`<li><b>${x[0]}</b>${x[1]?`<br><small>${x[1]}</small>`:''}</li>`).join('')}</ol>`).join('')}
+    <h4>📍 上山溫泉（かみのやま温泉駅）</h4><p style="color:var(--mu)">去 Liza world 上課最方便，有免費接駁上山，離山形市區也近</p>
+    <p style="margin-top:8px">山上訂不到的話，也可以住山形站附近，每天搭巴士上山（約 40 分鐘）。</p>
+  </div></details>`;
 }
 
 function secGear(r){
@@ -787,13 +845,25 @@ function secGear(r){
       <div class="shop"><b>住中央口・溫泉街附近 → 林檎屋</b><small>品質不錯、有中高階租賃，跟我們預約打九折</small></div>
       <div class="shop"><b>住上之台附近 → 鬧雪具</b><small>整座山最便宜，從專屬連結預約，填合作碼 <code>snowway24</code>，會知道你是我們的學生</small>
         <small><a href="https://www.surveycake.com/s/3qMKe" target="_blank" rel="noopener">預約連結 ↗</a></small></div>
-      <div class="shop"><b>去 Liza world → 雪場內租</b><small>當天租當天還，不用扛來扛去</small></div>`
+      <div class="shop"><b>去 Liza world → 雪場內租</b><small>當天租當天還，不用扛來扛去</small></div>
+      <details class="more"><summary>📋 藏王溫泉其他雪具店比較</summary><div class="in"><ol>
+        <li><b>上之台 美好境界</b><br><small>最便宜，但去年很多學生說鞋子腳痛（說今年會更新），撿便宜省錢可以選</small></li>
+        <li><b>中央站 Rossignol</b><br><small>品質好、價格只高一點，Rossignol 本身就是雪板品牌，小編推薦</small></li>
+        <li><b>上之台 best rental</b><br><small>雪場常見的 Burton 租賃板跟鞋，有點舊，價格普通，沒很推</small></li>
+        <li><b>中央站 ムラサキスポーツ</b><br><small>頂級租賃！有 Salomon 等一線好板，東西很新、全部 step on，雪服都是 AK，預算充足推薦（16:30 前要還）</small></li>
+        <li><b>中央站 Sibamama</b><br><small>偏舊、價格普通，但租得到小朋友的尺寸</small></li>
+        <li><b>山麓站 カスカワスポーツ</b><br><small>中高級租賃，價格中高但有品質，安全帽全是 MIPS，推薦</small></li>
+      </ol></div></details>`
     : `
       <div class="shop"><b>snow buddies（車站旁，東西都很新）</b><small>九五折優惠碼 <code>snowway2627</code>｜有接駁到雪場</small>
         <small><a href="https://snowbuddies-jp.com" target="_blank" rel="noopener">snowbuddies-jp.com ↗</a></small></div>
       <div class="shop"><b>ravosport（車站旁）</b><small>優惠碼 <code>SNOWWAY67</code></small>
         <small><a href="https://www.ravosport.com/ski_rental_list.php" target="_blank" rel="noopener">ravosport.com ↗</a></small></div>
-      <div class="shop"><b>SNOWRENTAL SHOP（岩原山腳）</b><small>九五折推薦碼 <code>湯澤王520</code>｜住エンゼルリゾート附近最方便</small></div>`;
+      <div class="shop"><b>SNOWRENTAL SHOP（岩原山腳）</b><small>九五折推薦碼 <code>湯澤王520</code>｜住エンゼルリゾート附近最方便</small></div>
+      <details class="more"><summary>📋 湯澤車站旁其他雪具店</summary><div class="in"><ol>
+        <li><b>青達雪具</b><br><small>推西口店，品質比東口好；官網常有早鳥價 <a href="https://chendarental.com/" target="_blank" rel="noopener">chendarental.com ↗</a></small></li>
+        <li><b>櫻雪具</b></li><li><b>BOO SPORT</b></li><li><b>SNOWDUCK</b></li>
+      </ol><p style="color:var(--mu)">都在車站旁，大多有中文店員</p></div></details>`;
   const gloss = a.know==='0' ? `<h3>📖 新手小字典</h3>${glossHtml()}` : '';
   return `<div class="sec"><h2>🎿 裝備清單</h2>
     <p style="font-size:13px;color:var(--mu)">打勾的項目會記在這台手機上</p>
@@ -801,7 +871,10 @@ function secGear(r){
     ${rent.length?`<h3>🏷️ 到當地租就好</h3><ul class="chk">${rent.map(x=>li(x,'p-bl')).join('')}</ul>`:''}
     ${ok.length?`<h3>✅ 你已經有了</h3><ul class="chk">${ok.map(x=>li([x[0],x[1],'','已有'],'p-gn')).join('')}</ul>`:''}
     <h3>🧳 其他別忘了</h3><ul class="chk">${extra.map(x=>li(x,'')).join('')}</ul>
-    <div class="callout gd">🛍️ 在台灣買裝備推薦「再不滑雪就等死」滑雪特賣會（北中南都有，不定時開），有品質又便宜，新手不用一開始買太貴的。</div>
+    <div class="callout">🏷️ <b>雪場租得到：</b>雪衣雪褲、滑雪板、鞋子、安全帽<br>
+      <b>雪場不一定租得到：</b>防摔褲、護膝、手套、雪鏡（比較貼身，通常只有台灣人開的雪具店才有）<br>
+      → 可以在車站旁台灣人開的雪具店租，或在台灣先買好</div>
+    <div class="callout gd">🛍️ 在台灣買裝備推薦「再不滑雪就等死」滑雪特賣會（北中南都有，不定時開），有品質又便宜，新手不用一開始買太貴的。滑雪襪也可以在蝦皮、淘寶買。</div>
     <h3>🏂 推薦雪具店</h3>${r?shops:'<p class="missing">完成第 1 關就會依地區推薦</p>'}
     <div class="callout">💡 可以的話「前一天傍晚」先取裝備，當天早上人很多，怕拖到上課時間。</div>
     ${gloss}
@@ -887,30 +960,59 @@ function secPrice(r){
   </div>`;
 }
 
+/* 傳給小編的內容：分成「小幫手推薦」跟「我的情況」，小編可以直接拿推薦內容跟客人確認 */
 function summary(){
   const a = A(), r = region();
-  const L = [];
-  if(r) L.push('地區：'+RNAME[r]+(a.region==='unsure'?'（小幫手推薦）':''));
+  const rec = [], me = [];
+  // 小幫手推薦
+  if(r){
+    rec.push('地區：'+RNAME[r]+(a.region==='unsure'?'（小幫手推薦）':'（我自己選的）'));
+    rec.push('推薦雪場：'+resortPick(r).n);
+  }
+  if(S.done.level){
+    const g = groups(+a.people||1), half = a.dayType==='half', days = +a.lessonDays||1;
+    const base = g.reduce((s,n)=>s+(half?HALF[n]:FULL[n]),0)*days;
+    const disc = !half && (!r || resortPick(r).disc);
+    rec.push(`推薦課程：${g.map(n=>'1 對 '+n).join('＋')}・${half?'半天':'全天'} × ${days} 天（預估 NT$${(disc?Math.round(base*.9):base).toLocaleString()}${disc?'，九折後':''}）`);
+  }
+  // 我的情況
   const m = {'12a':'12 月中以前','12b':'12 月下旬','1':'1 月','2':'2 月','3':'3 月','x':'還沒決定'}[a.month];
-  if(m) L.push('時間：'+m);
-  if(a.people) L.push('上課人數：'+a.people+' 人');
+  const dd = {'1':'滑 1 天','2':'滑 2 天','3':'滑 3 天','4':'滑 4 天以上'}[a.days];
+  if(m||dd) me.push('時間：'+[m,dd].filter(Boolean).join('，'));
   const k = {none:'沒有小朋友',big:'有 8 歲以上小朋友',small:'有 4～7 歲小朋友',tiny:'有 4 歲以下小朋友'}[a.kids];
-  if(k) L.push(k);
+  if(a.people||k) me.push('上課人數：'+(a.people?a.people+' 人':'')+(k?'（'+k+'）':''));
   const b = {sb:'單板',ski:'雙板',x:'還沒決定單雙板'}[a.board];
-  if(b) L.push(b);
   const e = {'0':'第一次滑雪','1':'滑過 1～3 天','2':'滑過 4 天以上'}[a.exp];
-  if(e) L.push('程度：'+e+({a:'（落葉飄）',b:'（C turn）',c:'（S turn）',d:'（紅線順暢）'}[a.lv]||''));
-  if(a.lessonDays) L.push('想上：'+(a.dayType==='half'?'半天':'全天')+' × '+a.lessonDays+' 天');
-  const st = {station:'已訂車站附近',slope:'已訂雪場旁',city:'已訂市區',none:'還沒訂住宿'}[a.stay];
-  if(st) L.push('住宿：'+st);
-  return L;
+  const lv = {a:'會落葉飄',b:'會 C turn',c:'會 S turn',d:'紅線順暢'}[a.lv];
+  const sp = a.sport==='yes' ? '有板類運動經驗' : '';
+  const lvl = [b,e,lv,sp].filter(Boolean).join('／');
+  if(lvl) me.push('程度：'+lvl);
+  const goal = {try:'體驗、安全玩雪',down:'能自己從綠線滑下來',s:'學會 S turn',carve:'刻滑、進階技巧'}[a.goal];
+  if(goal) me.push('目標：'+goal);
+  const ap = {nrt:'成田',hnd:'羽田',sdj:'仙台',x:'還沒買機票'}[a.airport];
+  const car = {yes:'會租車',no:'搭大眾運輸'}[a.car];
+  const ar = {before:'前一天就到',morning:'當天早上才過去',daytrip:'從東京當天來回'}[a.arrive];
+  const go = [ap&&('入境 '+ap), car, ar].filter(Boolean).join('／');
+  if(go) me.push('交通：'+go);
+  const st = {station:'已訂車站附近',slope:'已訂雪場旁',city:'已訂市區',none:'還沒訂'}[a.stay];
+  if(st) me.push('住宿：'+st);
+  if(S.done.gear){
+    const nm = {wear:'雪衣褲',glove:'手套',goggle:'雪鏡',helmet:'安全帽',pad:'防摔褲護膝',socks:'雪襪',board:'板子雪鞋'};
+    const have = (a.have||[]).map(x=>nm[x]);
+    me.push('裝備：'+(have.length ? '已有 '+have.join('、') : '都沒有，需要租'));
+    if(a.glasses==='yes') me.push('有戴眼鏡（需要 OTG 雪鏡）');
+  }
+  return {rec, me};
 }
 
 function buildMsg(){
-  const L = summary();
+  const {rec, me} = summary();
   const d = S.dates||{}, ds = [d.d1,d.d2,d.d3].filter(Boolean).map(x=>x.replace(/-/g,'/'));
-  const dateLine = d.unsure ? '日期：還不確定，想先了解' : ds.length ? '想上課的日期：'+ds.join('、') : '想上課的日期：（請填）';
-  return '你好！我用了「滑雪行前小幫手」，想跟教練確認日期～\n'+dateLine+'\n'+L.map(x=>'・'+x).join('\n');
+  const dateLine = d.unsure ? '📅 日期：還不確定，想先了解' : ds.length ? '📅 想上課的日期：'+ds.join('、') : '📅 想上課的日期：（請填）';
+  let t = '你好！我用了「滑雪行前小幫手」，想跟教練確認日期～\n'+dateLine;
+  if(rec.length) t += '\n\n【小幫手推薦】\n'+rec.map(x=>'・'+x).join('\n');
+  if(me.length) t += '\n\n【我的情況】\n'+me.map(x=>'・'+x).join('\n');
+  return t;
 }
 function sendLine(){
   const d = S.dates||{};
