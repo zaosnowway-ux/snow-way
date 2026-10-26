@@ -335,7 +335,6 @@ const HALF = [0,10000,11000,12000,13000,14000,15000];
 const TOUR = 24500;          // 藏王包團 5 天 4 夜（目前優惠均一價）
 const JPY = 0.21;            // 日圓→台幣 估算匯率
 const LINE_ID = '@575njlnj';
-const BOOK_URL = 'https://zaosnowway-ux.github.io/snow-way/';
 // 加入社群享全天課九折（限藏王、岩原、中里、神立）
 const GROUP_URL = 'https://line.me/ti/g2/SdZ0eIARsN1HKUfEWYccxJKdbju_L9WtNxrAGg?utm_source=invitation&utm_medium=link_copy&utm_campaign=default';
 
@@ -834,16 +833,14 @@ function secContact(r){
   window._msg = msg;
   return `<div class="sec" style="text-align:center"><h2 style="justify-content:center">💬 下一步</h2>
     <div class="disc" style="text-align:left">📌 以上為參考用結果。如有任何問題及疑慮，可以直接詢問客服，真人小編會依照您的情況回覆！</div>
-    <p style="margin-bottom:14px">把你的答案直接傳給小編，<br>幫你查教練空檔、算正式報價！</p>
+    <p style="margin-bottom:14px">教練名額要依日期確認，<br>把你的答案和日期傳給小編，<br>幫你查教練空檔、算正式報價！</p>
     <a class="btn btn-ln" href="${lineUrl}" target="_blank" rel="noopener">用 LINE 傳給小編</a>
     <div class="gap"></div>
     <a class="btn btn-ol" href="${GROUP_URL}" target="_blank" rel="noopener">🎁 加入 LINE 社群，全天課享九折</a>
     <p class="note" style="margin-top:6px">九折限藏王、岩原、中里、神立的全天課</p>
     <div class="gap"></div>
     <button class="btn btn-ol" onclick="copyMsg()">複製我的答案</button>
-    <div class="gap"></div>
-    <a class="btn btn-ol" href="${BOOK_URL}" target="_blank" rel="noopener">已經確定了，直接報名 →</a>
-    <p class="note">LINE 官方帳號 ${LINE_ID}</p>
+    <p class="note">LINE 官方帳號 ${LINE_ID}<br>小編確認日期有教練後，會再傳報名表單給你</p>
   </div>`;
 }
 
