@@ -89,13 +89,26 @@ a{color:var(--gd)}
 .nav{display:flex;gap:10px;margin-top:22px}
 .nav .back{flex:none;width:auto;padding:14px 18px}
 
-/* 小知識卡 */
-.tip-wrap{position:fixed;inset:0;background:rgba(58,46,26,.35);display:flex;align-items:flex-end;justify-content:center;z-index:20;animation:fade .2s}
+/* 小知識頁 */
 @keyframes fade{from{opacity:0}}
-.tip{width:100%;max-width:560px;background:var(--card);border-radius:20px 20px 0 0;padding:22px 20px 26px;animation:up .3s cubic-bezier(.2,.9,.3,1.2)}
-@keyframes up{from{transform:translateY(100%)}}
-.tip .h{font-size:13px;color:var(--gd);font-weight:700;letter-spacing:.06em;margin-bottom:6px}
-.tip .b{font-size:15px;margin-bottom:18px}
+.tip-page{text-align:center;padding:28px 0 10px;animation:pop .35s both}
+.tip-page .bulb{font-size:64px;line-height:1;margin-bottom:8px;animation:glow 1.2s ease-in-out infinite alternate}
+@keyframes glow{from{transform:scale(1);filter:drop-shadow(0 0 0 #FFD54F)}to{transform:scale(1.1);filter:drop-shadow(0 0 14px #FFD54F)}}
+.tip-page h2{font-size:24px;margin-bottom:16px;letter-spacing:.06em}
+.tip-page .b{font-size:17px;line-height:1.85;text-align:left;background:var(--card);border:1px solid var(--ln);border-left:5px solid var(--gd);border-radius:12px;padding:18px 18px;margin-bottom:26px;box-shadow:var(--shadow)}
+.tip-page .wait{height:52px;display:flex;align-items:center;justify-content:center}
+.tip-page .wait i{width:120px;height:4px;background:var(--cr2);border-radius:4px;overflow:hidden;position:relative}
+.tip-page .wait i::after{content:"";position:absolute;inset:0;background:var(--gd);transform-origin:left;animation:load 2s linear forwards}
+@keyframes load{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.sum{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:14px 16px;text-align:left;margin:0 0 18px;box-shadow:var(--shadow)}
+.sum .h{font-size:13px;color:var(--gd);font-weight:700;letter-spacing:.06em;margin-bottom:6px}
+.sum ul{padding-left:18px}
+.sum li{font-size:14.5px;margin-bottom:4px}
+.dates{display:grid;gap:8px;text-align:left;margin:4px 0 12px}
+.dates label{font-size:13px;color:var(--mu)}
+.dates input[type=date]{width:100%;padding:11px 12px;border:1.5px solid var(--ln);border-radius:10px;font-family:inherit;font-size:15px;color:var(--ik);background:#fff}
+.dates .unsure{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ik)}
+.dates .unsure input{width:18px;height:18px;accent-color:var(--gd)}
 
 /* 過關 */
 .clear{text-align:center;padding:30px 0}
@@ -467,15 +480,26 @@ function pick(id, v){
   setTimeout(()=>{ o.tip ? tip(o.tip) : next(); }, 260);
 }
 
+/* 小知識：獨立一整頁，按鈕晚 2 秒才出現，讓人先看完 */
 function tip(text){
-  const w = document.createElement('div');
-  w.className = 'tip-wrap';
-  w.innerHTML = `<div class="tip"><div class="h">💡 小知識</div><div class="b">${text}</div>
-    <button class="btn btn-gd">知道了，下一題 →</button></div>`;
-  const close = ()=>{ w.remove(); next(); };
-  w.querySelector('button').onclick = close;
-  w.onclick = e=>{ if(e.target===w) close(); };
-  document.body.appendChild(w);
+  const ch = CHAPTERS[run.chapters[run.ci]];
+  $app.innerHTML = `
+    <span class="chap-tag">${ch.icon} 第 ${CHAPTERS.indexOf(ch)+1} 關｜${ch.name}</span>
+    <div class="tip-page">
+      <div class="bulb">💡</div>
+      <h2>你知道嗎？</h2>
+      <div class="b">${text}</div>
+      <div class="wait"><i></i></div>
+    </div>`;
+  scrollTo(0,0);
+  setTimeout(()=>{
+    const wait = $app.querySelector('.tip-page .wait');
+    if(!wait) return;
+    const b = document.createElement('button');
+    b.className = 'btn btn-gd'; b.textContent = '看完了，下一題 →'; b.style.animation = 'pop .3s both';
+    b.onclick = next;
+    wait.replaceWith(b);
+  }, 2000);
 }
 
 function next(){ run.qi++; question(); }
@@ -493,19 +517,65 @@ function chapterClear(ch){
   snowBurst();
   const last = run.ci >= run.chapters.length-1;
   const allDone = CHAPTERS.every(c=>S.done[c.id]);
+  const detail = `<button class="btn btn-ol" onclick="result('${ch.id}')">${DETAIL[ch.id]} →</button>`;
   $app.innerHTML = `
     <div class="clear">
       <div class="badge">${ch.icon}</div>
       <h2>過關！獲得「${ch.badge}」</h2>
       <p>${CHAPTERS.filter(c=>S.done[c.id]).length} / 4 關完成</p>
+      <div class="sum"><div class="h">📋 本關小結論</div><ul>${chapterSummary(ch.id).map(x=>`<li>${x}</li>`).join('')}</ul></div>
       ${!last ? `<button class="btn btn-gd" onclick="run.ci++;run.qi=0;question()">下一關：${CHAPTERS[run.chapters[run.ci+1]].name} →</button>
-                 <div class="gap"></div><button class="btn btn-ol" onclick="result()">先看清單</button>`
-        : allDone ? `<button class="btn btn-gd" onclick="result()">看我的行前清單 ✨</button>`
-        : `<button class="btn btn-gd" onclick="home()">回到地圖</button>
-           <div class="gap"></div><button class="btn btn-ol" onclick="result()">先看目前的清單</button>`}
+                 <div class="gap"></div>${detail}`
+        : allDone ? `<button class="btn btn-gd" onclick="result()">看我的完整行前清單 ✨</button>
+                 <div class="gap"></div>${detail}`
+        : `${detail}<div class="gap"></div><button class="btn btn-ol" onclick="home()">回到地圖，玩其他關卡</button>`}
     </div>`;
   scrollTo(0,0);
 }
+const DETAIL = {place:'查看雪場推薦詳細', go:'查看交通路線詳細', gear:'查看裝備清單詳細', level:'查看課程與費用詳細'};
+
+/* 每關的小結論（2～4 點重點） */
+function chapterSummary(id){
+  const a = A(), r = region(), L = [];
+  if(id==='place'){
+    if(r){ const rp = resortPick(r); L.push(`推薦地區：<b>${RNAME[r]}</b>`); L.push(`推薦雪場：<b>${rp.n}</b>`); }
+    const m = {'12a':'12 月中前大部分雪場還沒開，記得確認開放日','1':'1 月雪況穩定、人比 2 月少，好時機！','2':'2 月是旺季，住宿要趕快訂','3':'3 月是春雪，跌倒不痛很適合練習'}[a.month];
+    if(m) L.push(m);
+    if(a.kids==='small') L.push('有 4～7 歲小朋友，建議 1 對 1 或家長一起陪同上課');
+  }
+  if(id==='go'){
+    const ap = {nrt:'成田',hnd:'羽田',sdj:'仙台'}[a.airport];
+    if(r && a.car!=='yes') L.push(r==='yuzawa'
+      ? `${ap?ap+' → ':''}東京站 → 上越新幹線 → <b>越後湯澤</b>（約 1 小時 20 分）`
+      : a.airport==='sdj' ? '仙台 → 高速巴士 → <b>藏王溫泉／上山溫泉</b>（約 1.5 小時）'
+      : `${ap?ap+' → ':''}東京站 → 山形新幹線 → <b>山形／上山溫泉</b>（約 2 小時 40 分）`);
+    if(a.car==='yes') L.push('開車一定要租雪胎車，山路常結冰');
+    if(a.arrive==='before') L.push('前一天到最從容，可以先去雪具店取裝備');
+    if(a.arrive==='morning') L.push(r==='zao' ? '當天才從東京去藏王上課會來不及，建議前一天到' : '當天早上到的話，8:00 前要抵達雪具店');
+    if(a.arrive==='daytrip') L.push(r==='zao' ? '藏王當天來回太趕，建議至少住一晚' : '湯澤可以當天來回，記得先訂好新幹線');
+    if(a.stay==='none') L.push(r==='yuzawa' ? '住宿推薦車站附近' : '住宿還沒訂的話要趕快訂');
+    if(!r) L.push('完成第 1 關，就會幫你排出完整路線');
+  }
+  if(id==='gear'){
+    const have = a.have||[], H = k=>have.includes(k);
+    const buy = ['雪襪','手套','防摔褲＋護膝','脖圍','排汗內層＋保暖中層'].filter((x,i)=>![H('socks'),H('glove'),H('pad'),false,false][i]);
+    if(a.glasses==='yes' && !H('goggle')) buy.push('OTG 雪鏡');
+    const rent = ['雪衣褲','安全帽', a.board==='ski'?'雪板＋雪鞋＋雪杖':'雪板＋雪鞋＋固定器'].filter((x,i)=>![H('wear'),H('helmet'),H('board')][i]);
+    L.push(`出發前要準備：<b>${buy.join('、')}</b>`);
+    if(rent.length) L.push(`到當地租就好：${rent.join('、')}`);
+    L.push('雪襪一定要買，不要用厚運動襪代替！');
+  }
+  if(id==='level'){
+    const g = groups(+a.people||1), half = a.dayType==='half', days = +a.lessonDays||1;
+    L.push(`推薦課程：<b>${g.map(n=>'1 對 '+n).join('＋')}・${half?'半天':'全天'} × ${days} 天</b>`);
+    const base = g.reduce((s,n)=>s+(half?HALF[n]:FULL[n]),0)*days;
+    const disc = !half && (!r || resortPick(r).disc);
+    L.push(`教練課預估：<b>NT$ ${(disc?Math.round(base*.9):base).toLocaleString()}</b>（整組總額${disc?'，加入 LINE 社群九折後':''}）`);
+    if(a.exp==='0') L.push(days===1?'上 1 天大約能學到落葉飄、控制方向':days===2?'上 2 天大約能學到 C turn，有機會到 S turn':'上 3 天大部分人能學到 S turn');
+  }
+  return L;
+}
+
 function snowBurst(){
   for(let i=0;i<26;i++){
     const s = document.createElement('div');
@@ -562,7 +632,7 @@ function groups(n){
 /* ============================================================
    畫面：結果
    ============================================================ */
-function result(){
+function result(focus){
   run = null;
   const a = A(), r = region();
   $app.innerHTML = `
@@ -573,15 +643,15 @@ function result(){
       <p>依照你的回答整理，可以截圖或把網址存起來</p>
       <div class="badges">${CHAPTERS.map(c=>`<span class="${S.done[c.id]?'got':''}" title="${c.badge}">${c.icon}</span>`).join('')}</div>
     </div>
-    ${secPlace(r)}
-    ${secGo(r)}
-    ${secGear(r)}
-    ${secLevel(r)}
-    ${secPrice(r)}
+    <div id="sec-place">${secPlace(r)}</div>
+    <div id="sec-go">${secGo(r)}</div>
+    <div id="sec-gear">${secGear(r)}</div>
+    <div id="sec-level">${secLevel(r)}${secPrice(r)}</div>
     ${secContact(r)}
     <p class="foot">SNOW WAY 滑雪學校｜慢火実業合同会社<br>教練全員持國際證照與合法簽證｜課程含保險</p>`;
   bindChecks();
-  scrollTo(0,0);
+  const el = focus && document.getElementById('sec-'+focus);
+  if(el) el.scrollIntoView({block:'start'}); else scrollTo(0,0);
 }
 
 function missing(i){
@@ -608,7 +678,9 @@ function secPlace(r){
     <div class="big-pick"><span class="e">${r==='zao'?'🌲':'🚄'}</span><div><b>${RNAME[r]}</b><small>${a.region==='unsure'?'小幫手推薦':'你選的地區'}</small></div></div>
     <h3>推薦雪場：${rp.n}</h3><p>${rp.why}</p>
     ${tips.length?`<ul style="margin-top:10px">${tips.map(t=>`<li>${t}</li>`).join('')}</ul>`:''}
-    ${r==='yuzawa'?`<div class="callout">💡 NASPA、湯澤高原、天使格蘭門口的 Snow Wood 只收雪場自己的學校，外部學校不能進去教課喔。</div>`:''}
+    ${r==='yuzawa'?`<div class="callout warn"><b>🚫 這幾個雪場不開放外部學校教學，SNOW WAY 無法在這裡上課：</b>
+      <div style="margin:6px 0 4px">✕ NASPA<br>✕ 湯澤高原<br>✕ Snow Wood（天使格蘭飯店門口）</div>
+      <small style="color:var(--mu)">訂房前可以先確認一下！住天使格蘭的話，走 5～8 分鐘到旁邊的湯澤中里就能上課。</small></div>`:''}
   </div>`;
 }
 
@@ -826,15 +898,33 @@ function summary(){
   return L;
 }
 
-function secContact(r){
+function buildMsg(){
   const L = summary();
-  const msg = '你好！我用了「滑雪行前小幫手」，想詢問課程空檔～\n'+L.map(x=>'・'+x).join('\n')+'\n日期：（請填）';
-  const lineUrl = 'https://line.me/R/oaMessage/'+encodeURIComponent(LINE_ID)+'/?'+encodeURIComponent(msg);
-  window._msg = msg;
-  return `<div class="sec" style="text-align:center"><h2 style="justify-content:center">💬 下一步</h2>
+  const d = S.dates||{}, ds = [d.d1,d.d2,d.d3].filter(Boolean).map(x=>x.replace(/-/g,'/'));
+  const dateLine = d.unsure ? '日期：還不確定，想先了解' : ds.length ? '想上課的日期：'+ds.join('、') : '想上課的日期：（請填）';
+  return '你好！我用了「滑雪行前小幫手」，想跟教練確認日期～\n'+dateLine+'\n'+L.map(x=>'・'+x).join('\n');
+}
+function sendLine(){
+  const d = S.dates||{};
+  if(!d.unsure && !d.d1){ toast('請先選想上課的日期，或勾「日期還不確定」'); document.getElementById('d1').focus(); return; }
+  location.href = 'https://line.me/R/oaMessage/'+encodeURIComponent(LINE_ID)+'/?'+encodeURIComponent(buildMsg());
+}
+function setDate(k, v){ S.dates = S.dates||{}; S.dates[k] = v; save(); }
+
+function secContact(r){
+  const d = S.dates||{};
+  const today = new Date().toISOString().slice(0,10);
+  const inp = (k,lbl)=>`<label for="${k}">${lbl}</label><input type="date" id="${k}" min="${today}" value="${d[k]||''}" onchange="setDate('${k}',this.value)">`;
+  return `<div class="sec" style="text-align:center"><h2 style="justify-content:center">💬 下一步：跟教練確認日期</h2>
     <div class="disc" style="text-align:left">📌 以上為參考用結果。如有任何問題及疑慮，可以直接詢問客服，真人小編會依照您的情況回覆！</div>
-    <p style="margin-bottom:14px">教練名額要依日期確認，<br>把你的答案和日期傳給小編，<br>幫你查教練空檔、算正式報價！</p>
-    <a class="btn btn-ln" href="${lineUrl}" target="_blank" rel="noopener">用 LINE 傳給小編</a>
+    <p style="margin-bottom:10px">教練名額要依日期確認，<br>選好想上課的日期傳給小編，<br>幫你查教練空檔、算正式報價！</p>
+    <div class="dates">
+      ${inp('d1','第一天上課日期')}
+      ${inp('d2','第二天（選填）')}
+      ${inp('d3','第三天（選填）')}
+      <label class="unsure"><input type="checkbox" ${d.unsure?'checked':''} onchange="setDate('unsure',this.checked)">日期還不確定，想先問問看</label>
+    </div>
+    <button class="btn btn-ln" onclick="sendLine()">📅 用 LINE 跟教練確認日期</button>
     <div class="gap"></div>
     <a class="btn btn-ol" href="${GROUP_URL}" target="_blank" rel="noopener">🎁 加入 LINE 社群，全天課享九折</a>
     <p class="note" style="margin-top:6px">九折限藏王、岩原、中里、神立的全天課</p>
@@ -846,9 +936,10 @@ function secContact(r){
 
 function copyMsg(){
   const done = ()=>toast('已複製！貼到 LINE 給小編就可以了');
-  if(navigator.clipboard) navigator.clipboard.writeText(window._msg).then(done, ()=>fallback());
+  const msg = buildMsg();
+  if(navigator.clipboard) navigator.clipboard.writeText(msg).then(done, ()=>fallback());
   else fallback();
-  function fallback(){ const t=document.createElement('textarea'); t.value=window._msg; document.body.appendChild(t); t.select(); try{document.execCommand('copy');done();}catch(e){} t.remove(); }
+  function fallback(){ const t=document.createElement('textarea'); t.value=msg; document.body.appendChild(t); t.select(); try{document.execCommand('copy');done();}catch(e){} t.remove(); }
 }
 function toast(t){ const d=document.createElement('div'); d.className='toast'; d.textContent=t; document.body.appendChild(d); setTimeout(()=>d.remove(),2200); }
 
@@ -860,7 +951,7 @@ function bindChecks(){
 
 function reset(){
   if(!confirm('要清除所有答案，重新開始嗎？')) return;
-  S = {a:{}, done:{}, checks:{}}; save(); home();
+  S = {a:{}, done:{}, checks:{}, dates:{}}; save(); home();
 }
 
 home();
