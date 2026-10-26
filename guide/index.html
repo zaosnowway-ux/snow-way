@@ -285,7 +285,7 @@ const CHAPTERS = [
         ]},
       {id:'know', q:'你對滑雪裝備了解多少？',
         opts:[
-          {v:'0',e:'😵',t:'完全不懂',s:'固定器是什麼？'},
+          {v:'0',e:'😵',t:'完全不懂',s:'固定器是什麼？',gloss:true},
           {v:'1',e:'🙂',t:'大概知道'},
           {v:'2',e:'😎',t:'很懂，有自己的偏好'}
         ]},
@@ -477,17 +477,33 @@ function pick(id, v){
   const o = q.opts.find(x=>x.v===v);
   // 先讓選項亮一下，再跳小知識或下一題
   question();
-  setTimeout(()=>{ o.tip ? tip(o.tip) : next(); }, 260);
+  setTimeout(()=>{
+    if(o.gloss) tip(`<p style="margin-bottom:10px">沒關係，大家都是從這裡開始的！先認識幾個滑雪常用的詞 👇</p>${glossHtml()}`, '📖', '新手小字典');
+    else if(o.tip) tip(o.tip);
+    else next();
+  }, 260);
 }
 
+/* 新手小字典：選「完全不懂」時先看一次，結果頁也會再放 */
+const GLOSS = [
+  ['單板・雙板','單板是一塊板、側身滑（Snowboard）；雙板是兩塊板、面向前方（Ski）'],
+  ['固定器','把雪鞋固定在單板上的零件，租「整套」就會附'],
+  ['整套租借','通常只有板子＋鞋子（＋固定器或雪杖），雪衣褲、安全帽要另外加'],
+  ['綠線・紅線・黑線','雪道難度：綠線最簡單（新手）、紅線中級、黑線高級'],
+  ['回數券・一日券','回數券是搭一次算一次的纜車票；一日券整天無限搭。新手第一天用回數券比較划算'],
+  ['落葉飄','像落葉一樣左右滑下坡，新手第一個要學的控制速度方法'],
+  ['魔毯','雪場的輸送帶，站上去就會載你到坡上，不用自己爬']
+];
+function glossHtml(){ return `<div class="gloss">${GLOSS.map(g=>`<div><b>${g[0]}</b>：${g[1]}</div>`).join('')}</div>`; }
+
 /* 小知識：獨立一整頁，按鈕晚 2 秒才出現，讓人先看完 */
-function tip(text){
+function tip(text, icon, title){
   const ch = CHAPTERS[run.chapters[run.ci]];
   $app.innerHTML = `
     <span class="chap-tag">${ch.icon} 第 ${CHAPTERS.indexOf(ch)+1} 關｜${ch.name}</span>
     <div class="tip-page">
-      <div class="bulb">💡</div>
-      <h2>你知道嗎？</h2>
+      <div class="bulb">${icon||'💡'}</div>
+      <h2>${title||'你知道嗎？'}</h2>
       <div class="b">${text}</div>
       <div class="wait"><i></i></div>
     </div>`;
@@ -778,15 +794,7 @@ function secGear(r){
       <div class="shop"><b>ravosport（車站旁）</b><small>優惠碼 <code>SNOWWAY67</code></small>
         <small><a href="https://www.ravosport.com/ski_rental_list.php" target="_blank" rel="noopener">ravosport.com ↗</a></small></div>
       <div class="shop"><b>SNOWRENTAL SHOP（岩原山腳）</b><small>九五折推薦碼 <code>湯澤王520</code>｜住エンゼルリゾート附近最方便</small></div>`;
-  const gloss = a.know==='0' ? `
-    <h3>📖 新手小字典</h3>
-    <div class="gloss">
-      <div><b>固定器</b>：把雪鞋固定在單板上的零件，租「整套」就會附</div>
-      <div><b>整套租借</b>：通常只有板子＋鞋子（＋固定器或雪杖），雪衣褲、安全帽要另外加</div>
-      <div><b>回數券</b>：搭一次算一次的纜車票，新手第一天用這個比一日券划算</div>
-      <div><b>落葉飄</b>：像落葉一樣左右滑下坡，新手第一個要學的控制速度方法</div>
-      <div><b>魔毯</b>：雪場的輸送帶，站上去就會載你到坡上，不用自己爬</div>
-    </div>` : '';
+  const gloss = a.know==='0' ? `<h3>📖 新手小字典</h3>${glossHtml()}` : '';
   return `<div class="sec"><h2>🎿 裝備清單</h2>
     <p style="font-size:13px;color:var(--mu)">打勾的項目會記在這台手機上</p>
     <h3>🛒 出發前要準備</h3><ul class="chk">${buy.map(x=>li(x, x[3]==='必買'?'p-rd':'p-gd')).join('')}</ul>
